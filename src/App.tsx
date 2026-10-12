@@ -5900,36 +5900,42 @@ function App() {
     let frame = 0
     let lastTime = 0
     let bottomReachedAt = 0
-    const pixelsPerSecond = 7
+    let pixelCarry = 0
+    let startAt =
+      performance.now() + 1800
+
+    const pixelsPerSecond = 12
 
     const tick = (time: number) => {
       const feed =
         feedRef.current
 
-      if (
+      if (!lastTime) {
+        lastTime = time
+      }
+
+      const elapsed =
+        Math.min(
+          time - lastTime,
+          100,
+        )
+
+      const canScroll =
         feed &&
         !pausedRef.current &&
-        view !== 'FAVORITES' &&
-        view !== 'PLAYOFFS' &&
+        time >= startAt &&
         feed.scrollHeight >
           feed.clientHeight + 2
-      ) {
-        if (!lastTime) {
-          lastTime = time
-        }
 
-        const elapsed =
-          Math.min(
-            time - lastTime,
-            100,
-          )
-
+      if (canScroll && feed) {
         const atBottom =
           feed.scrollTop +
             feed.clientHeight >=
           feed.scrollHeight - 2
 
         if (atBottom) {
+          pixelCarry = 0
+
           if (!bottomReachedAt) {
             bottomReachedAt = time
           }
@@ -5937,24 +5943,36 @@ function App() {
           if (
             time -
               bottomReachedAt >=
-            900
+            1200
           ) {
             feed.scrollTop = 0
             bottomReachedAt = 0
+            startAt = time + 900
           }
         } else {
           bottomReachedAt = 0
-          feed.scrollTop +=
+
+          pixelCarry +=
             (pixelsPerSecond *
               elapsed) /
             1000
-        }
 
-        lastTime = time
+          const wholePixels =
+            Math.floor(pixelCarry)
+
+          if (wholePixels > 0) {
+            feed.scrollTop +=
+              wholePixels
+            pixelCarry -=
+              wholePixels
+          }
+        }
       } else {
-        lastTime = time
+        pixelCarry = 0
         bottomReachedAt = 0
       }
+
+      lastTime = time
 
       frame =
         window.requestAnimationFrame(
@@ -5967,14 +5985,17 @@ function App() {
         tick,
       )
 
-    return () =>
+    return () => {
       window.cancelAnimationFrame(
         frame,
       )
+    }
   }, [
     view,
     popupMode,
     selectedDate,
+    selectedNFLWeek,
+    nflFantasyMode,
   ])
 
   const sortedGames =
