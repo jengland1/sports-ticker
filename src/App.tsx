@@ -233,41 +233,45 @@ const standingsCache = new Map<
   Promise<Map<string, StandingInfo>>
 >()
 
-const gameSummaryCache = new Map<
-  string,
-  Promise<any>
->()
 
 const teamLeadersCache = new Map<
   string,
   Promise<any>
 >()
 
-function fetchGameSummary(
-  game: Game,
+const fantasyLeagueWeekCache = new Map<
+  string,
+  Promise<FantasyLeagueResponse>
+>()
+
+function fetchFantasyLeagueWeek(
+  league: FantasyLeagueConfig,
+  week: number,
 ) {
+  const key =
+    `${league.id}-${week}`
+
   const cached =
-    gameSummaryCache.get(game.id)
+    fantasyLeagueWeekCache.get(key)
 
-  if (cached) return cached
-
-  const config =
-    LEAGUES[game.league]
+  if (cached) {
+    return cached
+  }
 
   const request = fetchJson(
-    espnUrl(
-      'site',
-      `/apis/site/v2/sports/${config.sport}/${config.slug}/summary?event=${game.id}`,
-    ),
-  ).catch(() => null)
+    `${FANTASY_PROXY}?leagueId=${encodeURIComponent(
+      league.id,
+    )}&week=${week}`,
+  )
 
-  gameSummaryCache.set(
-    game.id,
+  fantasyLeagueWeekCache.set(
+    key,
     request,
   )
 
   return request
 }
+
 
 function fetchTeamLeaders(
   league: LeagueKey,
@@ -287,7 +291,7 @@ function fetchTeamLeaders(
   const request = fetchJson(
     espnUrl(
       'site',
-      `/apis/site/v2/sports/${config.sport}/${config.slug}/teams/${teamId}/leaders`,
+      `/apis/site/v2/sports/${config.sport}/${config.slug}/teams/${teamId}/leaders?season=2026`,
     ),
   ).catch(() => null)
 
@@ -462,32 +466,130 @@ function uniqueMiniPlayers(
   return result
 }
 
-function teamPointLeaders(
+
+function teamNHLPointLeaders(
   data: any,
-  limit: number,
+  limit = 3,
 ) {
   const rows =
     walkLeaderRows(data)
 
-  const points =
-    rows
-      .filter((row) =>
-        /(^|\b)(points?|pts)(\b|$)/i.test(
-          row.category,
-        ),
-      )
-      .sort(
-        (a, b) =>
-          (b.numeric ?? -Infinity) -
-          (a.numeric ?? -Infinity),
-      )
+  const athleteKey = (row: any) =>
+    String(
+      row?.athlete?.id ||
+        row?.athlete?.uid ||
+        row?.athlete?.displayName ||
+        row?.athlete?.fullName ||
+        '',
+    )
 
-  return uniqueMiniPlayers(
+  const points = rows
+    .filter((row) =>
+      /(^|\b)(points?|pts)(\b|$)/i.test(
+        row.category,
+      ),
+    )
+    .sort(
+      (a, b) =>
+        (b.numeric ?? -Infinity) -
+        (a.numeric ?? -Infinity),
+    )
+
+  const source =
     points.length
       ? points
-      : rows,
-    limit,
-  )
+      : rows
+
+  const seen = new Set<string>()
+  const leaders: MiniPlayer[] = []
+
+  for (const row of source) {
+    const key = athleteKey(row)
+
+    if (!key || seen.has(key)) {
+      continue
+    }
+
+    seen.add(key)
+
+    const athlete =
+      row.athlete || {}
+
+    const samePlayer = rows.filter(
+      (candidate) =>
+        athleteKey(candidate) === key,
+    )
+
+    const statValue = (
+      pattern: RegExp,
+    ) => {
+      const match =
+        samePlayer.find((candidate) =>
+          pattern.test(
+            String(candidate.category),
+          ),
+        )
+
+      return (
+        match?.value ||
+        (match?.numeric !== undefined
+          ? String(match.numeric)
+          : undefined)
+      )
+    }
+
+    const goals =
+      statValue(
+        /(^|\b)(goals?|g)(\b|$)/i,
+      )
+    const assists =
+      statValue(
+        /(^|\b)(assists?|a)(\b|$)/i,
+      )
+    const pointValue =
+      statValue(
+        /(^|\b)(points?|pts)(\b|$)/i,
+      ) ||
+      row.value
+
+    leaders.push({
+      id: key,
+      name:
+        athlete.displayName ||
+        athlete.fullName ||
+        athlete.shortName ||
+        'Player',
+      shortName:
+        athlete.shortName,
+      headshot:
+        athlete.headshot?.href ||
+        athlete.headshot,
+      position:
+        athlete.position?.abbreviation ||
+        athlete.position?.name,
+      value:
+        pointValue,
+      sub: [
+        goals
+          ? `${goals} G`
+          : null,
+        assists
+          ? `${assists} A`
+          : null,
+        pointValue
+          ? `${pointValue} P`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(' · '),
+    })
+
+    if (leaders.length >= limit) {
+      break
+    }
+  }
+
+  return leaders
 }
 
 function topNBAPlayer(
@@ -523,261 +625,9 @@ function topNBAPlayer(
   return picked
 }
 
-function topMLBPlayer(
-  data: any,
-) {
-  const rows =
-    walkLeaderRows(data)
 
-  const preferred =
-    rows.filter((row) =>
-      /(home runs?|hr|ops|batting average|avg|rbi)/i.test(
-        row.category,
-      ),
-    )
 
-  return uniqueMiniPlayers(
-    preferred.length
-      ? preferred
-      : rows,
-    1,
-  )[0]
-}
 
-function getCompetitorFromSummary(
-  summary: any,
-  teamId: string,
-) {
-  return summary?.header
-    ?.competitions?.[0]
-    ?.competitors?.find(
-      (item: any) =>
-        String(item?.team?.id) ===
-        String(teamId),
-    )
-}
-
-function statMapFromObject(
-  source: any,
-) {
-  const map =
-    new Map<string, string>()
-
-  const lists = [
-    source?.statistics,
-    source?.stats,
-  ]
-
-  for (const list of lists) {
-    if (!Array.isArray(list)) {
-      continue
-    }
-
-    for (const stat of list) {
-      if (
-        stat &&
-        typeof stat === 'object'
-      ) {
-        const key = String(
-          stat.abbreviation ||
-            stat.name ||
-            stat.displayName ||
-            '',
-        ).toUpperCase()
-
-        const value =
-          stat.displayValue ??
-          stat.value
-
-        if (key && value !== undefined) {
-          map.set(
-            key,
-            String(value),
-          )
-        }
-      }
-    }
-  }
-
-  return map
-}
-
-function findStarter(
-  summary: any,
-  teamId: string,
-  kind: 'goalie' | 'pitcher',
-): MiniPlayer | undefined {
-  const competitor =
-    getCompetitorFromSummary(
-      summary,
-      teamId,
-    )
-
-  const probables =
-    competitor?.probables ||
-    competitor?.probablePitchers ||
-    []
-
-  const probable =
-    Array.isArray(probables)
-      ? probables.find(
-          (item: any) => {
-            const position =
-              String(
-                item?.athlete
-                  ?.position
-                  ?.abbreviation ||
-                  item?.position
-                    ?.abbreviation ||
-                  '',
-              ).toUpperCase()
-
-            return kind === 'goalie'
-              ? position === 'G' ||
-                  /goal/i.test(
-                    item?.name || '',
-                  )
-              : position === 'SP' ||
-                  position === 'P' ||
-                  /pitch/i.test(
-                    item?.name || '',
-                  )
-          },
-        ) || probables[0]
-      : undefined
-
-  if (probable?.athlete) {
-    const stats =
-      statMapFromObject(probable)
-
-    const record =
-      stats.get('W-L') ||
-      stats.get('W-L-OTL') ||
-      stats.get('RECORD') ||
-      probable?.statistics
-        ?.find?.(
-          (item: any) =>
-            /record/i.test(
-              item?.name ||
-                item?.displayName ||
-                '',
-            ),
-        )?.displayValue
-
-    const secondary =
-      kind === 'goalie'
-        ? stats.get('SV%') ||
-          stats.get('SVPCT') ||
-          stats.get('SAVE%')
-        : stats.get('ERA')
-
-    return {
-      id: String(
-        probable.athlete.id ||
-          probable.athlete.displayName,
-      ),
-      name:
-        probable.athlete
-          .displayName ||
-        probable.athlete.fullName ||
-        'Starter',
-      headshot:
-        probable.athlete
-          .headshot?.href ||
-        probable.athlete
-          .headshot,
-      position:
-        probable.athlete
-          .position?.abbreviation,
-      value: record,
-      sub: secondary,
-    }
-  }
-
-  const playerGroups =
-    summary?.boxscore?.players ||
-    []
-
-  const teamGroup =
-    playerGroups.find(
-      (group: any) =>
-        String(group?.team?.id) ===
-        String(teamId),
-    )
-
-  const statGroup =
-    teamGroup?.statistics?.find(
-      (group: any) => {
-        const label = String(
-          group?.name ||
-            group?.displayName ||
-            '',
-        )
-
-        return kind === 'goalie'
-          ? /goal/i.test(label)
-          : /pitch/i.test(label)
-      },
-    )
-
-  const athleteRow =
-    statGroup?.athletes?.find(
-      (row: any) =>
-        row?.starter === true,
-    ) ||
-    statGroup?.athletes?.[0]
-
-  if (!athleteRow?.athlete) {
-    return undefined
-  }
-
-  const labels =
-    statGroup?.labels || []
-  const values =
-    athleteRow?.stats || []
-  const rowMap =
-    new Map<string, string>()
-
-  labels.forEach(
-    (label: string, index: number) =>
-      rowMap.set(
-        String(label).toUpperCase(),
-        String(values[index] ?? ''),
-      ),
-  )
-
-  return {
-    id: String(
-      athleteRow.athlete.id ||
-        athleteRow.athlete
-          .displayName,
-    ),
-    name:
-      athleteRow.athlete
-        .displayName ||
-      athleteRow.athlete
-        .fullName ||
-      'Starter',
-    headshot:
-      athleteRow.athlete
-        .headshot?.href ||
-      athleteRow.athlete
-        .headshot,
-    position:
-      athleteRow.athlete
-        .position?.abbreviation,
-    value:
-      rowMap.get('W-L') ||
-      rowMap.get('W-L-OTL') ||
-      rowMap.get('REC') ||
-      undefined,
-    sub:
-      kind === 'goalie'
-        ? rowMap.get('SV%') ||
-          rowMap.get('SVPCT')
-        : rowMap.get('ERA'),
-  }
-}
 
 function dateKey(date: Date) {
   const year = date.getFullYear()
@@ -3326,16 +3176,266 @@ function PlayerHeadshot({
   )
 }
 
+
+type NFLFantasyGamePlayer = {
+  leagueName: string
+  fantasyTeamName: string
+  ownerSide: 'YOU' | 'OPP'
+  player: FantasyPlayer
+}
+
+function NFLFantasyGameQuickStats({
+  game,
+}: {
+  game: Game
+}) {
+  const [rows, setRows] =
+    useState<NFLFantasyGamePlayer[]>([])
+  const [loaded, setLoaded] =
+    useState(false)
+
+  useEffect(() => {
+    let active = true
+
+    const week =
+      game.week ||
+      1
+
+    setLoaded(false)
+
+    Promise.all(
+      FANTASY_LEAGUES.map(
+        async (league) => {
+          try {
+            const data =
+              await fetchFantasyLeagueWeek(
+                league,
+                week,
+              )
+
+            const matchup =
+              data.matchups.find(
+                (item) =>
+                  String(
+                    item.home.teamId,
+                  ) ===
+                    String(
+                      league.teamId,
+                    ) ||
+                  String(
+                    item.away.teamId,
+                  ) ===
+                    String(
+                      league.teamId,
+                    ),
+              )
+
+            if (!matchup) {
+              return [] as NFLFantasyGamePlayer[]
+            }
+
+            const mySide =
+              String(
+                matchup.home.teamId,
+              ) ===
+              String(league.teamId)
+                ? matchup.home
+                : matchup.away
+
+            const opponentSide =
+              mySide === matchup.home
+                ? matchup.away
+                : matchup.home
+
+            const relevantCodes =
+              new Set([
+                game.away.code,
+                game.home.code,
+              ])
+
+            const sideRows = (
+              side: FantasyMatchupSide,
+              ownerSide:
+                | 'YOU'
+                | 'OPP',
+            ) =>
+              side.players
+                .filter(
+                  (player) =>
+                    player.proTeam &&
+                    relevantCodes.has(
+                      player.proTeam,
+                    ),
+                )
+                .sort((a, b) => {
+                  if (
+                    a.started !==
+                    b.started
+                  ) {
+                    return a.started
+                      ? -1
+                      : 1
+                  }
+
+                  return (
+                    (b.projected ?? 0) -
+                    (a.projected ?? 0)
+                  )
+                })
+                .map(
+                  (player) => ({
+                    leagueName:
+                      league.name,
+                    fantasyTeamName:
+                      side.teamName,
+                    ownerSide,
+                    player,
+                  }),
+                )
+
+            return [
+              ...sideRows(
+                mySide,
+                'YOU',
+              ),
+              ...sideRows(
+                opponentSide,
+                'OPP',
+              ),
+            ]
+          } catch {
+            return [] as NFLFantasyGamePlayer[]
+          }
+        },
+      ),
+    ).then((groups) => {
+      if (!active) return
+
+      setRows(
+        groups.flat(),
+      )
+      setLoaded(true)
+    })
+
+    return () => {
+      active = false
+    }
+  }, [
+    game.id,
+    game.week,
+    game.away.code,
+    game.home.code,
+  ])
+
+  if (!loaded || !rows.length) {
+    return null
+  }
+
+  return (
+    <div className="gameQuickStats nflFantasyQuickStats">
+      <div className="quickStatTitle">
+        FANTASY IMPACT
+      </div>
+
+      <div className="nflFantasyQuickList">
+        {rows.map(
+          (
+            {
+              leagueName,
+              fantasyTeamName,
+              ownerSide,
+              player,
+            },
+            index,
+          ) => {
+            const isLive =
+              player.gameState ===
+                'in' ||
+              player.gameState ===
+                'post'
+
+            return (
+              <div
+                className={`nflFantasyQuickRow ${
+                  player.started
+                    ? ''
+                    : 'bench'
+                }`}
+                key={`${leagueName}-${ownerSide}-${player.id}-${index}`}
+              >
+                <div className="nflFantasyQuickIdentity">
+                  {player.headshot ? (
+                    <img
+                      src={
+                        player.headshot
+                      }
+                      alt=""
+                    />
+                  ) : (
+                    <div className="nflFantasyQuickPhotoPlaceholder" />
+                  )}
+
+                  <div>
+                    <span>
+                      {leagueName} ·{' '}
+                      {ownerSide}
+                      {!player.started
+                        ? ' · BN'
+                        : ''}
+                    </span>
+                    <strong>
+                      {player.name}
+                    </strong>
+                    <em>
+                      {player.position}
+                      {player.proTeam
+                        ? ` · ${player.proTeam}`
+                        : ''}
+                      {fantasyTeamName
+                        ? ` · ${fantasyTeamName}`
+                        : ''}
+                    </em>
+                  </div>
+                </div>
+
+                <div className="nflFantasyQuickScores">
+                  <span>
+                    PROJ{' '}
+                    <strong>
+                      {player.projected !==
+                      undefined
+                        ? player.projected.toFixed(
+                            1,
+                          )
+                        : '—'}
+                    </strong>
+                  </span>
+
+                  {isLive && (
+                    <span className="actual">
+                      PTS{' '}
+                      <strong>
+                        {player.points.toFixed(
+                          1,
+                        )}
+                      </strong>
+                    </span>
+                  )}
+                </div>
+              </div>
+            )
+          },
+        )}
+      </div>
+    </div>
+  )
+}
+
 function GameQuickStats({
   game,
 }: {
   game: Game
 }) {
-  const [summary, setSummary] =
-    useState<any>(
-      game.summaryData || null,
-    )
-
   const [awayLeaders, setAwayLeaders] =
     useState<any>(null)
   const [homeLeaders, setHomeLeaders] =
@@ -3344,7 +3444,11 @@ function GameQuickStats({
     useState(false)
 
   useEffect(() => {
-    if (game.league === 'NFL') {
+    if (
+      game.league === 'NFL' ||
+      game.league === 'MLB'
+    ) {
+      setStatsLoaded(true)
       return
     }
 
@@ -3352,7 +3456,6 @@ function GameQuickStats({
     setStatsLoaded(false)
 
     Promise.all([
-      fetchGameSummary(game),
       fetchTeamLeaders(
         game.league,
         game.away.id,
@@ -3361,18 +3464,17 @@ function GameQuickStats({
         game.league,
         game.home.id,
       ),
-    ]).then(
-      ([nextSummary, away, home]) => {
+    ])
+      .then(([away, home]) => {
         if (!active) return
-        setSummary(nextSummary)
         setAwayLeaders(away)
         setHomeLeaders(home)
         setStatsLoaded(true)
-      },
-    ).catch(() => {
-      if (!active) return
-      setStatsLoaded(true)
-    })
+      })
+      .catch(() => {
+        if (!active) return
+        setStatsLoaded(true)
+      })
 
     return () => {
       active = false
@@ -3385,72 +3487,77 @@ function GameQuickStats({
   ])
 
   if (game.league === 'NFL') {
+    return (
+      <NFLFantasyGameQuickStats
+        game={game}
+      />
+    )
+  }
+
+  if (game.league === 'MLB') {
     return null
   }
 
   if (game.league === 'NHL') {
     const awayPoints =
-      teamPointLeaders(
+      teamNHLPointLeaders(
         awayLeaders,
         3,
       )
     const homePoints =
-      teamPointLeaders(
+      teamNHLPointLeaders(
         homeLeaders,
         3,
-      )
-    const awayGoalie =
-      findStarter(
-        summary,
-        game.away.id,
-        'goalie',
-      )
-    const homeGoalie =
-      findStarter(
-        summary,
-        game.home.id,
-        'goalie',
       )
 
     return (
       <div className="gameQuickStats">
         <div className="quickStatTitle">
-          SEASON LEADERS · PROJECTED STARTERS
+          TEAM POINT LEADERS
         </div>
+
         <div className="quickTeamGrid">
           {[
             {
               code: game.away.code,
               leaders: awayPoints,
-              goalie: awayGoalie,
             },
             {
               code: game.home.code,
               leaders: homePoints,
-              goalie: homeGoalie,
             },
           ].map((side) => (
             <div
-              className="quickTeamPanel"
+              className="quickTeamPanel nhlLeaderPanel"
               key={side.code}
             >
               <div className="quickTeamCode">
-                {side.code} · POINTS
+                {side.code}
               </div>
+
               <div className="quickLeaderList">
                 {side.leaders.length ? (
                   side.leaders.map(
                     (player, index) => (
                       <div
-                        className="quickLeaderRow"
+                        className="quickLeaderRow nhlLeaderRow"
                         key={player.id}
                       >
-                        <span>
-                          {index + 1}. {player.name}
-                        </span>
-                        <strong>
-                          {player.value || '—'}
-                        </strong>
+                        <div className="nhlLeaderName">
+                          <span>
+                            {index + 1}.
+                          </span>
+                          <strong>
+                            {player.name}
+                          </strong>
+                        </div>
+
+                        <em>
+                          {player.sub ||
+                            (player.value
+                              ? `${player.value} P`
+                              : '—')}
+                        </em>
                       </div>
                     ),
                   )
@@ -3462,23 +3569,6 @@ function GameQuickStats({
                   </div>
                 )}
               </div>
-              <div className="quickStarter">
-                <PlayerHeadshot
-                  player={side.goalie}
-                />
-                <div>
-                  <span>STARTING GOALIE</span>
-                  <strong>
-                    {side.goalie?.name ||
-                      'TBD'}
-                  </strong>
-                  <em>
-                    {side.goalie
-                      ? `${side.goalie.value || 'Record —'} · SV% ${side.goalie.sub || '—'}`
-                      : 'Starter not posted yet'}
-                  </em>
-                </div>
-              </div>
             </div>
           ))}
         </div>
@@ -3486,116 +3576,42 @@ function GameQuickStats({
     )
   }
 
-  if (game.league === 'NBA') {
-    const away =
-      topNBAPlayer(awayLeaders)
-    const home =
-      topNBAPlayer(homeLeaders)
-
-    return (
-      <div className="gameQuickStats">
-        <div className="quickStatTitle">
-          LEADING SCORERS
-        </div>
-        <div className="quickFeatureGrid">
-          {[
-            [game.away.code, away],
-            [game.home.code, home],
-          ].map(([code, player]: any) => (
-            <div
-              className="quickFeaturePlayer"
-              key={code}
-            >
-              <PlayerHeadshot
-                player={player}
-              />
-              <div>
-                <span>{code}</span>
-                <strong>
-                  {player?.name ||
-                    (statsLoaded
-                      ? 'Stats unavailable'
-                      : 'Loading…')}
-                </strong>
-                <em>
-                  {player?.value
-                    ? `${player.value} PPG`
-                    : 'PPG —'}
-                </em>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  const awayPitcher =
-    findStarter(
-      summary,
-      game.away.id,
-      'pitcher',
-    )
-  const homePitcher =
-    findStarter(
-      summary,
-      game.home.id,
-      'pitcher',
-    )
-  const awayTop =
-    topMLBPlayer(awayLeaders)
-  const homeTop =
-    topMLBPlayer(homeLeaders)
+  const away =
+    topNBAPlayer(awayLeaders)
+  const home =
+    topNBAPlayer(homeLeaders)
 
   return (
     <div className="gameQuickStats">
       <div className="quickStatTitle">
-        STARTERS · TEAM SPOTLIGHT
+        LEADING SCORERS · PPG
       </div>
-      <div className="quickTeamGrid">
+
+      <div className="quickFeatureGrid">
         {[
-          {
-            code: game.away.code,
-            starter: awayPitcher,
-            top: awayTop,
-          },
-          {
-            code: game.home.code,
-            starter: homePitcher,
-            top: homeTop,
-          },
-        ].map((side) => (
+          [game.away.code, away],
+          [game.home.code, home],
+        ].map(([code, player]: any) => (
           <div
-            className="quickTeamPanel"
-            key={side.code}
+            className="quickFeaturePlayer"
+            key={code}
           >
-            <div className="quickStarter">
-              <PlayerHeadshot
-                player={side.starter}
-              />
-              <div>
-                <span>{side.code} STARTER</span>
-                <strong>
-                  {side.starter?.name ||
-                    'TBD'}
-                </strong>
-                <em>
-                  {side.starter
-                    ? `${side.starter.value || 'Record —'}${side.starter.sub ? ` · ${side.starter.sub} ERA` : ''}`
-                    : 'Starter not posted yet'}
-                </em>
-              </div>
-            </div>
-            <div className="quickTopPlayer">
-              <span>TOP PLAYER</span>
+            <PlayerHeadshot
+              player={player}
+            />
+
+            <div>
+              <span>{code}</span>
               <strong>
-                {side.top?.name ||
+                {player?.name ||
                   (statsLoaded
                     ? 'Stats unavailable'
                     : 'Loading…')}
               </strong>
               <em>
-                {side.top?.value || '—'}
+                {player?.value
+                  ? `${player.value} PPG`
+                  : 'PPG —'}
               </em>
             </div>
           </div>
@@ -3832,6 +3848,38 @@ function FantasyLineupComparison({
           </div>
         )
       })}
+
+      {starters && (
+        <div className="fantasyTotalRow">
+          <div className="fantasyTotalSide">
+            <span>
+              PROJ{' '}
+              {away.projected !== undefined
+                ? away.projected.toFixed(1)
+                : '—'}
+            </span>
+            <strong>
+              {away.score.toFixed(1)}
+            </strong>
+          </div>
+
+          <div className="fantasyTotalLabel">
+            TOTAL
+          </div>
+
+          <div className="fantasyTotalSide right">
+            <strong>
+              {home.score.toFixed(1)}
+            </strong>
+            <span>
+              PROJ{' '}
+              {home.projected !== undefined
+                ? home.projected.toFixed(1)
+                : '—'}
+            </span>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
