@@ -3215,7 +3215,7 @@ function NFLFantasyGameQuickStats({
 
             const matchup =
               data.matchups.find(
-                (item) =>
+                (item: FantasyMatchup) =>
                   String(
                     item.home.teamId,
                   ) ===
