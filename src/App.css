@@ -4096,3 +4096,64 @@ input {
   font-weight: 900;
   letter-spacing: .08em;
 }
+
+/* --- Larger ticker typography pass --- */
+.leagueHeader strong { font-size: 11px; }
+.leagueHeader em { font-size: 9px; }
+.teamLogo span { font-size: 10px; }
+.teamColumn strong { font-size: 20px; }
+.teamColumn span { font-size: 10px; }
+.centerColumn > strong { font-size: 12px; }
+.centerColumn > span { font-size: 10px; }
+.finalCenter { font-size: 15px !important; }
+.tab { font-size: 11px; }
+.nflWeekTitle span,
+.nflWeekTitle em { font-size: 9px; }
+.nflWeekTitle strong { font-size: 16px; }
+
+/* Fantasy matchup screen */
+.fantasyRosterHeader { font-size: 7px; }
+.fantasySlot { font-size: 9px; }
+.fantasyPlayerCell strong { font-size: 10px; }
+.fantasyPlayerCell span { font-size: 7px; }
+.fantasyPlayerNumbers span { font-size: 9px; }
+.fantasyPlayerNumbers b { font-size: 13px; }
+.fantasyConnectCard strong { font-size: 10px; }
+.fantasyConnectCard span,
+.fantasyConnectCard small { font-size: 9px; }
+.fantasyMatchupNames strong { font-size: 10px; }
+.fantasyMatchupNames span { font-size: 8px; }
+.fantasyProjection b,
+.fantasyWinChance b { font-size: 7px; }
+.fantasyProjection span,
+.fantasyWinChance span { font-size: 9px; }
+.sideBySideNames strong { font-size: 11px !important; }
+.sideBySideNames span { font-size: 9px !important; }
+.espnScoreboard > em { font-size: 9px; }
+.espnScoreboard small { font-size: 8px; }
+.espnScoreboard .fantasyScoreTeamName { font-size: 10px; }
+.espnScoreboard > div > strong { font-size: 28px; }
+.fantasyScoreDetails span { font-size: 8px !important; }
+.openEspnMatchup { font-size: 9px; }
+.fantasyComparisonHeader > span { font-size: 9px; }
+.fantasyComparisonHeader > div span { font-size: 8px; }
+.fantasyComparisonColumns span { font-size: 8px; }
+.fantasySlotCenter { font-size: 8px; }
+.fantasyPlayerNameLine strong { font-size: 9.5px; }
+.fantasyInjuryTag { font-size: 7px; }
+.fantasyPlayerMeta,
+.fantasyPlayerGame { font-size: 7.5px; }
+.fantasyPlayerProj { font-size: 8px; }
+.fantasyPlayerScoreBlock strong { font-size: 10px; }
+.fantasyTotalSide span { font-size: 8px; }
+.fantasyTotalSide strong { font-size: 15px; }
+.fantasyTotalLabel { font-size: 8px; }
+
+/* NFL fantasy impact rows */
+.nflFantasyLeagueTag b,
+.nflFantasyLeagueTag i { font-size: 7px; }
+.nflFantasyQuickIdentity span,
+.nflFantasyQuickIdentity em { font-size: 7px; }
+.nflFantasyQuickIdentity strong { font-size: 9px; }
+.nflFantasyQuickScores span { font-size: 7px; }
+.nflFantasyQuickScores strong { font-size: 9px; }
