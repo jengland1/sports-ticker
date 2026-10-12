@@ -43,6 +43,18 @@ const LINEUP_SLOT_NAMES: Record<number, string> = {
   23: 'FLEX',
 }
 
+const LINEUP_SLOT_ORDER: Record<number, number> = {
+  0: 0,
+  2: 1,
+  4: 2,
+  6: 3,
+  23: 4,
+  16: 5,
+  17: 6,
+  20: 7,
+  21: 8,
+}
+
 
 type ProGameInfo = {
   teamId: string
@@ -219,7 +231,7 @@ function parsePlayers(
     []
 
   return entries
-    .map((entry: any) => {
+    .map((entry: any, rosterIndex: number) => {
       const pool =
         entry?.playerPoolEntry || {}
       const player =
@@ -275,6 +287,8 @@ function parsePlayers(
             positionId
           ] || lineupSlot,
         lineupSlot,
+        lineupSlotId,
+        rosterIndex,
         started:
           ![20, 21].includes(
             lineupSlotId,
@@ -327,18 +341,22 @@ function parsePlayers(
     })
     .sort(
       (a: any, b: any) => {
-        if (
-          a.started !==
-          b.started
-        ) {
-          return a.started
-            ? -1
-            : 1
+        const aRank =
+          LINEUP_SLOT_ORDER[
+            a.lineupSlotId
+          ] ?? 99
+        const bRank =
+          LINEUP_SLOT_ORDER[
+            b.lineupSlotId
+          ] ?? 99
+
+        if (aRank !== bRank) {
+          return aRank - bRank
         }
 
         return (
-          b.points -
-          a.points
+          a.rosterIndex -
+          b.rosterIndex
         )
       },
     )
