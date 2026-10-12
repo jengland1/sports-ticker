@@ -43,6 +43,91 @@ const LINEUP_SLOT_NAMES: Record<number, string> = {
   23: 'FLEX',
 }
 
+
+type ProGameInfo = {
+  teamId: string
+  teamAbbrev: string
+  opponentAbbrev: string
+  opponentTeamId: string
+  homeAway: 'home' | 'away'
+  kickoff?: string
+  statusState?: string
+  statusDetail?: string
+  network?: string
+  teamScore?: string
+  opponentScore?: string
+}
+
+function fantasyHeadshot(playerId: string) {
+  return `https://a.espncdn.com/i/headshots/nfl/players/full/${playerId}.png`
+}
+
+async function fetchNflWeekGames(week: number) {
+  const url =
+    `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=2026&seasontype=2&week=${week}&limit=100`
+
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': 'Mozilla/5.0 sports-ticker',
+    },
+  })
+
+  if (!response.ok) {
+    return new Map<string, ProGameInfo>()
+  }
+
+  const data = await response.json()
+  const map = new Map<string, ProGameInfo>()
+
+  for (const event of data?.events || []) {
+    const competition = event?.competitions?.[0] || {}
+    const competitors = competition?.competitors || []
+    const network = (competition?.broadcasts || [])
+      .flatMap((item: any) => item?.names || [])
+      .filter(Boolean)
+      .join(' · ')
+
+    for (const competitor of competitors) {
+      const team = competitor?.team || {}
+      const opponent = competitors.find(
+        (item: any) => item !== competitor,
+      )
+      const opponentTeam = opponent?.team || {}
+      const teamId = String(team?.id || '')
+
+      if (!teamId) continue
+
+      map.set(teamId, {
+        teamId,
+        teamAbbrev:
+          team?.abbreviation || team?.shortDisplayName || '',
+        opponentAbbrev:
+          opponentTeam?.abbreviation || opponentTeam?.shortDisplayName || '',
+        opponentTeamId: String(opponentTeam?.id || ''),
+        homeAway:
+          competitor?.homeAway === 'home' ? 'home' : 'away',
+        kickoff: event?.date,
+        statusState: event?.status?.type?.state,
+        statusDetail:
+          event?.status?.type?.shortDetail ||
+          event?.status?.type?.detail,
+        network: network || undefined,
+        teamScore:
+          competitor?.score !== undefined
+            ? String(competitor.score)
+            : undefined,
+        opponentScore:
+          opponent?.score !== undefined
+            ? String(opponent.score)
+            : undefined,
+      })
+    }
+  }
+
+  return map
+}
+
 function numberValue(
   value: unknown,
   fallback = 0,
@@ -122,6 +207,7 @@ function playerProjection(
 function parsePlayers(
   side: any,
   week: number,
+  proGames: Map<string, ProGameInfo>,
 ) {
   const entries =
     side
@@ -134,9 +220,16 @@ function parsePlayers(
 
   return entries
     .map((entry: any) => {
+      const pool =
+        entry?.playerPoolEntry || {}
       const player =
-        entry?.playerPoolEntry
-          ?.player || {}
+        pool?.player || {}
+
+      const playerId = String(
+        player?.id ||
+          entry?.id ||
+          Math.random(),
+      )
 
       const lineupSlotId =
         Number(
@@ -159,12 +252,19 @@ function parsePlayers(
         ] ||
         'FLEX'
 
+      const proTeamId = String(
+        player?.proTeamId ?? '',
+      )
+      const game =
+        proGames.get(proTeamId)
+
+      const ownership =
+        player?.ownership ||
+        pool?.ratings?.[0] ||
+        {}
+
       return {
-        id: String(
-          player?.id ||
-            entry?.id ||
-            Math.random(),
-        ),
+        id: playerId,
         name:
           player?.fullName ||
           player?.displayName ||
@@ -189,6 +289,40 @@ function parsePlayers(
             entry,
             week,
           ),
+        headshot:
+          player?.headshot?.href ||
+          fantasyHeadshot(playerId),
+        proTeamId,
+        proTeam:
+          game?.teamAbbrev || undefined,
+        opponent:
+          game?.opponentAbbrev || undefined,
+        homeAway:
+          game?.homeAway,
+        kickoff:
+          game?.kickoff,
+        gameStatus:
+          game?.statusDetail,
+        gameState:
+          game?.statusState,
+        network:
+          game?.network,
+        teamScore:
+          game?.teamScore,
+        opponentScore:
+          game?.opponentScore,
+        injuryStatus:
+          player?.injuryStatus ||
+          player?.injury?.status ||
+          undefined,
+        percentOwned:
+          Number.isFinite(Number(ownership?.percentOwned))
+            ? Number(ownership.percentOwned)
+            : undefined,
+        percentStarted:
+          Number.isFinite(Number(ownership?.percentStarted))
+            ? Number(ownership.percentStarted)
+            : undefined,
       }
     })
     .sort(
@@ -239,6 +373,7 @@ function parseSide(
   side: any,
   teams: Map<string, any>,
   week: number,
+  proGames: Map<string, ProGameInfo>,
 ) {
   const teamId =
     String(
@@ -278,6 +413,7 @@ function parseSide(
       parsePlayers(
         side,
         week,
+        proGames,
       ),
   }
 }
@@ -366,6 +502,7 @@ export default async function handler(
     'mTeam',
     'mMatchupScore',
     'mBoxscore',
+    'mRoster',
   ]) {
     params.append(
       'view',
@@ -429,6 +566,9 @@ export default async function handler(
     const data =
       await response.json()
 
+    const proGames =
+      await fetchNflWeekGames(week)
+
     const teams =
       new Map<string, any>()
 
@@ -473,12 +613,14 @@ export default async function handler(
                 item.home,
                 teams,
                 week,
+                proGames,
               ),
             away:
               parseSide(
                 item.away,
                 teams,
                 week,
+                proGames,
               ),
           }),
         )
@@ -493,6 +635,7 @@ export default async function handler(
         ],
       week,
       matchups,
+      espnUrl: `https://fantasy.espn.com/football/boxscore?leagueId=${leagueId}&matchupPeriodId=${week}&scoringPeriodId=${week}&seasonId=${seasonYear}`,
     })
   } catch (error) {
     console.error(
