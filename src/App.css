@@ -3417,3 +3417,421 @@ input {
 .fantasyTeamScore.compact .fantasyTeamEyebrow {
   color: rgba(255, 255, 255, 0.42);
 }
+
+/* =========================================================
+   ESPN-STYLE FANTASY MATCHUP — dense vertical ticker layout
+   ========================================================= */
+
+.espnStyleFantasy {
+  padding: 0 8px 18px;
+}
+
+.espnStyleFantasy .fantasyViewHeader {
+  margin: 12px 0 8px;
+}
+
+.espnStyleFantasy .fantasyViewHeader strong {
+  color: #f5f7fa;
+}
+
+.espnStyleFantasy .fantasyViewHeader span,
+.espnStyleFantasy .fantasyViewHeader em {
+  color: rgba(255, 255, 255, .42);
+}
+
+.espnStyleFantasy .fantasyLeagueSwitcher {
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.espnStyleFantasy .fantasyLeagueSwitcher button {
+  min-width: 0;
+  padding: 7px 5px;
+  border: 1px solid rgba(255, 255, 255, .09);
+  background: rgba(255, 255, 255, .025);
+  color: rgba(255, 255, 255, .56);
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+.espnStyleFantasy .fantasyLeagueSwitcher button.active {
+  border-color: rgba(255, 255, 255, .28);
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  box-shadow: none;
+}
+
+.espnMatchupNav {
+  grid-template-columns: 30px minmax(0, 1fr) 30px;
+  gap: 7px;
+  margin: 2px 0 8px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+}
+
+.espnMatchupNav button {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, .11);
+  background: rgba(255, 255, 255, .035);
+  color: rgba(255, 255, 255, .82);
+  font-size: 18px;
+}
+
+.sideBySideNames {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+}
+
+.sideBySideNames strong {
+  min-width: 0;
+  font-size: 9px !important;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+  color: #f1f3f5;
+  letter-spacing: .01em;
+}
+
+.sideBySideNames span {
+  font-size: 7px !important;
+  color: rgba(255, 255, 255, .28) !important;
+}
+
+.espnScoreboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 4px;
+  padding: 0;
+  margin: 0 0 8px;
+  border: 1px solid rgba(255, 255, 255, .085);
+  border-radius: 9px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, .018);
+}
+
+.espnScoreboard > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 9px 5px 8px;
+  background: transparent;
+  border: 0 !important;
+}
+
+.espnScoreboard > div.isMine {
+  background: rgba(255, 255, 255, .025);
+}
+
+.espnScoreboard > em {
+  align-self: center;
+  justify-self: center;
+  color: rgba(255, 255, 255, .23);
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.espnScoreboard small {
+  color: rgba(255, 255, 255, .32);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.espnScoreboard .fantasyScoreTeamName {
+  display: block;
+  min-height: 22px;
+  margin: 3px 0 2px;
+  color: rgba(255, 255, 255, .75);
+  font-size: 8px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.espnScoreboard > div > strong {
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+
+.espnScoreboard > div.isLeading > strong {
+  color: #52e391;
+  text-shadow: 0 0 16px rgba(82, 227, 145, .18);
+}
+
+.fantasyScoreDetails {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  gap: 4px;
+  margin-top: 7px;
+}
+
+.fantasyScoreDetails span {
+  padding: 4px 2px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .03);
+  color: rgba(255, 255, 255, .55) !important;
+  font-size: 6px !important;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-align: center;
+}
+
+.openEspnMatchup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 30px;
+  margin: 0 0 10px;
+  border: 1px solid rgba(255, 255, 255, .11);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .035);
+  color: rgba(255, 255, 255, .72);
+  text-decoration: none;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.openEspnMatchup:hover {
+  background: rgba(255, 255, 255, .07);
+  color: #fff;
+}
+
+.fantasyComparisonSection {
+  margin-top: 9px;
+  border: 1px solid rgba(255, 255, 255, .085);
+  border-radius: 9px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, .012);
+}
+
+.fantasyComparisonSection.bench {
+  opacity: .86;
+}
+
+.fantasyComparisonHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 27px;
+  padding: 0 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+  background: rgba(255, 255, 255, .025);
+}
+
+.fantasyComparisonHeader > span {
+  color: rgba(255, 255, 255, .55);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+
+.fantasyComparisonHeader > div {
+  display: flex;
+  gap: 14px;
+}
+
+.fantasyComparisonHeader > div span {
+  color: rgba(255, 255, 255, .28);
+  font-size: 6px;
+  font-weight: 900;
+}
+
+.fantasyComparisonColumns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr);
+  align-items: center;
+  min-height: 27px;
+  padding: 0 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+
+.fantasyComparisonColumns span {
+  min-width: 0;
+  color: rgba(255, 255, 255, .38);
+  font-size: 6px;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  letter-spacing: .04em;
+}
+
+.fantasyComparisonColumns span:nth-child(2) {
+  color: rgba(255, 255, 255, .2);
+}
+
+.fantasyVersusRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 68px;
+  border-bottom: 1px solid rgba(255, 255, 255, .055);
+}
+
+.fantasyVersusRow:last-child {
+  border-bottom: 0;
+}
+
+.fantasySlotCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid rgba(255, 255, 255, .045);
+  border-right: 1px solid rgba(255, 255, 255, .045);
+  color: rgba(255, 255, 255, .35);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+
+.fantasyPlayerSide {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-width: 0;
+  padding: 6px 5px 5px;
+}
+
+.fantasyPlayerSide.empty {
+  background: rgba(255, 255, 255, .008);
+}
+
+.fantasyPlayerIdentity {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.fantasyPlayerSide.right .fantasyPlayerIdentity {
+  grid-template-columns: minmax(0, 1fr) 30px;
+}
+
+.fantasyPlayerSide.right .fantasyPlayerPhoto {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.fantasyPlayerSide.right .fantasyPlayerText {
+  grid-column: 1;
+  grid-row: 1;
+  text-align: right;
+}
+
+.fantasyPlayerPhoto {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  background: rgba(255, 255, 255, .055);
+}
+
+.fantasyPlayerPhoto.placeholder {
+  border: 1px solid rgba(255, 255, 255, .06);
+}
+
+.fantasyPlayerText {
+  min-width: 0;
+}
+
+.fantasyPlayerNameLine {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.fantasyPlayerSide.right .fantasyPlayerNameLine {
+  justify-content: flex-end;
+}
+
+.fantasyPlayerNameLine strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #f5f7fa;
+  font-size: 7.5px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasyInjuryTag {
+  flex: 0 0 auto;
+  color: #ff7474;
+  font-size: 5px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.fantasyPlayerMeta,
+.fantasyPlayerGame {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasyPlayerMeta {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, .43);
+  font-size: 5.5px;
+  font-weight: 800;
+}
+
+.fantasyPlayerGame {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, .58);
+  font-size: 5.5px;
+  line-height: 1.2;
+}
+
+.fantasyPlayerScoreBlock {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, .045);
+}
+
+.fantasyPlayerSide.left .fantasyPlayerScoreBlock {
+  text-align: right;
+}
+
+.fantasyPlayerSide.right .fantasyPlayerScoreBlock {
+  text-align: left;
+}
+
+.fantasyPlayerProj {
+  color: rgba(255, 255, 255, .35);
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.fantasyPlayerScoreBlock strong {
+  color: #fff;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.fantasyComparisonSection.bench .fantasyPlayerScoreBlock strong,
+.fantasyComparisonSection.bench .fantasyPlayerNameLine strong {
+  color: rgba(255, 255, 255, .73);
+}
