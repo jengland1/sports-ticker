@@ -3203,8 +3203,14 @@ function NFLFantasyGameQuickStats({
 
     setLoaded(false)
 
+    const impactLeagues = FANTASY_LEAGUES.filter(
+      (league) =>
+        league.name === 'SFL' ||
+        league.name === 'EP Fellas',
+    )
+
     Promise.all(
-      FANTASY_LEAGUES.map(
+      impactLeagues.map(
         async (league) => {
           try {
             const data =
@@ -3360,6 +3366,10 @@ function NFLFantasyGameQuickStats({
                   player.started
                     ? ''
                     : 'bench'
+                } ${
+                  leagueName === 'SFL'
+                    ? 'league-sfl'
+                    : 'league-ep'
                 }`}
                 key={`${leagueName}-${ownerSide}-${player.id}-${index}`}
               >
@@ -3376,12 +3386,18 @@ function NFLFantasyGameQuickStats({
                   )}
 
                   <div>
-                    <span>
-                      {leagueName} ·{' '}
-                      {ownerSide}
-                      {!player.started
-                        ? ' · BN'
-                        : ''}
+                    <span className="nflFantasyLeagueTag">
+                      <b>
+                        {leagueName === 'SFL'
+                          ? 'SFL'
+                          : 'EP'}
+                      </b>
+                      <i>
+                        {ownerSide}
+                        {!player.started
+                          ? ' · BN'
+                          : ''}
+                      </i>
                     </span>
                     <strong>
                       {player.name}
