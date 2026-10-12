@@ -117,13 +117,6 @@ type MiniPlayer = {
   fantasyPoints?: number
 }
 
-type NFLFantasyPlayer = MiniPlayer & {
-  fantasyPoints: number
-  teamCode: string
-  opponent?: string
-}
-
-
 type FantasyPlayer = {
   id: string
   name: string
@@ -224,14 +217,6 @@ function espnUrl(
 const standingsCache = new Map<
   LeagueKey,
   Promise<Map<string, StandingInfo>>
->()
-
-const oddsCache = new Map<
-  string,
-  {
-    updated: number
-    odds?: OddsInfo
-  }
 >()
 
 const gameSummaryCache = new Map<
@@ -780,33 +765,6 @@ function findStarter(
   }
 }
 
-function numberFromCell(
-  labels: string[],
-  stats: any[],
-  names: string[],
-) {
-  for (const name of names) {
-    const index = labels.findIndex(
-      (label) =>
-        String(label)
-          .toUpperCase() ===
-        name.toUpperCase(),
-    )
-
-    if (index >= 0) {
-      const value = cleanNumber(
-        stats[index],
-      )
-
-      if (value !== undefined) {
-        return value
-      }
-    }
-  }
-
-  return 0
-}
-
 function dateKey(date: Date) {
   const year = date.getFullYear()
 
@@ -900,38 +858,6 @@ function getTimePeriod(date: Date) {
   if (hour < 21) return 'EVENING'
 
   return 'NIGHT'
-}
-
-function formatPrice(
-  value: unknown,
-): string | undefined {
-  if (
-    value === undefined ||
-    value === null ||
-    value === ''
-  ) {
-    return undefined
-  }
-
-  const numberValue = Number(value)
-
-  if (!Number.isNaN(numberValue)) {
-    if (numberValue > 0) {
-      return `+${numberValue}`
-    }
-
-    return `${numberValue}`
-  }
-
-  return String(value)
-}
-
-function formatSpread(
-  value: number,
-) {
-  return value > 0
-    ? `+${value}`
-    : `${value}`
 }
 
 async function fetchJson(
@@ -1208,254 +1134,6 @@ function parseTeam(
     standing:
       standingMap.get(code),
   }
-}
-
-function normalizeOdds(
-  item: any,
-  awayCode: string,
-  homeCode: string,
-): OddsInfo | undefined {
-  if (!item) {
-    return undefined
-  }
-
-  const awayOdds =
-    item?.awayTeamOdds || {}
-
-  const homeOdds =
-    item?.homeTeamOdds || {}
-
-  let awaySpread:
-    | string
-    | undefined
-
-  let homeSpread:
-    | string
-    | undefined
-
-  if (
-    awayOdds?.spread !==
-      undefined &&
-    awayOdds?.spread !==
-      null
-  ) {
-    const value =
-      Number(
-        awayOdds.spread,
-      )
-
-    if (!Number.isNaN(value)) {
-      awaySpread =
-        formatSpread(value)
-    }
-  }
-
-  if (
-    homeOdds?.spread !==
-      undefined &&
-    homeOdds?.spread !==
-      null
-  ) {
-    const value =
-      Number(
-        homeOdds.spread,
-      )
-
-    if (!Number.isNaN(value)) {
-      homeSpread =
-        formatSpread(value)
-    }
-  }
-
-  if (
-    (!awaySpread ||
-      !homeSpread) &&
-    item?.details
-  ) {
-    const match = String(
-      item.details,
-    )
-      .trim()
-      .match(
-        /^([A-Z0-9]+)\s+([+-]?\d+(?:\.\d+)?)/i,
-      )
-
-    if (match) {
-      const favoriteCode =
-        match[1].toUpperCase()
-
-      const favoriteSpread =
-        Number(match[2])
-
-      if (
-        !Number.isNaN(
-          favoriteSpread,
-        )
-      ) {
-        if (
-          favoriteCode ===
-          awayCode
-        ) {
-          awaySpread =
-            formatSpread(
-              favoriteSpread,
-            )
-
-          homeSpread =
-            formatSpread(
-              -favoriteSpread,
-            )
-        }
-
-        if (
-          favoriteCode ===
-          homeCode
-        ) {
-          homeSpread =
-            formatSpread(
-              favoriteSpread,
-            )
-
-          awaySpread =
-            formatSpread(
-              -favoriteSpread,
-            )
-        }
-      }
-    }
-  }
-
-  if (
-    (!awaySpread ||
-      !homeSpread) &&
-    item?.spread !==
-      undefined
-  ) {
-    const spreadValue =
-      Math.abs(
-        Number(item.spread),
-      )
-
-    if (
-      !Number.isNaN(
-        spreadValue,
-      )
-    ) {
-      if (
-        awayOdds?.favorite ===
-        true
-      ) {
-        awaySpread =
-          formatSpread(
-            -spreadValue,
-          )
-
-        homeSpread =
-          formatSpread(
-            spreadValue,
-          )
-      }
-
-      if (
-        homeOdds?.favorite ===
-        true
-      ) {
-        homeSpread =
-          formatSpread(
-            -spreadValue,
-          )
-
-        awaySpread =
-          formatSpread(
-            spreadValue,
-          )
-      }
-    }
-  }
-
-  return {
-    provider:
-      item?.provider?.name ||
-      undefined,
-
-    awaySpread,
-
-    awaySpreadOdds:
-      formatPrice(
-        awayOdds?.spreadOdds ??
-          awayOdds?.spreadPrice,
-      ),
-
-    homeSpread,
-
-    homeSpreadOdds:
-      formatPrice(
-        homeOdds?.spreadOdds ??
-          homeOdds?.spreadPrice,
-      ),
-
-    total:
-      item?.overUnder !==
-      undefined
-        ? String(
-            item.overUnder,
-          )
-        : undefined,
-
-    overOdds:
-      formatPrice(
-        item?.overOdds ??
-          item?.overPrice,
-      ),
-
-    underOdds:
-      formatPrice(
-        item?.underOdds ??
-          item?.underPrice,
-      ),
-
-    awayMoneyline:
-      formatPrice(
-        awayOdds?.moneyLine,
-      ),
-
-    homeMoneyline:
-      formatPrice(
-        homeOdds?.moneyLine,
-      ),
-  }
-}
-
-function chooseOddsItem(
-  items: any[],
-) {
-  if (!items.length) {
-    return undefined
-  }
-
-  const preferredIds = [
-    '68',
-    '41',
-    '37',
-    '58',
-    '38',
-  ]
-
-  for (const id of preferredIds) {
-    const result =
-      items.find(
-        (item) =>
-          String(
-            item?.provider?.id,
-          ) === id,
-      )
-
-    if (result) {
-      return result
-    }
-  }
-
-  return items[0]
 }
 
 async function parseEvents(
@@ -2355,119 +2033,6 @@ function TeamLogo({
   )
 }
 
-: {
-  game: Game
-  compact?: boolean
-}) {
-  const odds =
-    game.odds
-
-  if (!odds) {
-    return (
-      <div className="oddsUnavailable">
-        ODDS UNAVAILABLE
-      </div>
-    )
-  }
-
-  return (
-    <div
-      className={`oddsBoard ${
-        compact
-          ? 'compact'
-          : ''
-      }`}
-    >
-      <div className="oddsLine">
-        <span className="oddsLabel">
-          SPREAD
-        </span>
-
-        <span>
-          {game.away.code}{' '}
-          {odds.awaySpread ||
-            '—'}
-
-          <em>
-            {odds.awaySpreadOdds
-              ? `(${odds.awaySpreadOdds})`
-              : '(—)'}
-          </em>
-        </span>
-
-        <span>
-          {game.home.code}{' '}
-          {odds.homeSpread ||
-            '—'}
-
-          <em>
-            {odds.homeSpreadOdds
-              ? `(${odds.homeSpreadOdds})`
-              : '(—)'}
-          </em>
-        </span>
-      </div>
-
-      <div className="oddsLine">
-        <span className="oddsLabel">
-          TOTAL
-        </span>
-
-        <span>
-          O {odds.total || '—'}
-
-          <em>
-            {odds.overOdds
-              ? `(${odds.overOdds})`
-              : '(—)'}
-          </em>
-        </span>
-
-        <span>
-          U {odds.total || '—'}
-
-          <em>
-            {odds.underOdds
-              ? `(${odds.underOdds})`
-              : '(—)'}
-          </em>
-        </span>
-      </div>
-
-      <div className="oddsLine">
-        <span className="oddsLabel">
-          ML
-        </span>
-
-        <span>
-          {game.away.code}
-
-          <em>
-            {odds.awayMoneyline ||
-              '—'}
-          </em>
-        </span>
-
-        <span>
-          {game.home.code}
-
-          <em>
-            {odds.homeMoneyline ||
-              '—'}
-          </em>
-        </span>
-      </div>
-
-      {!compact &&
-        odds.provider && (
-          <div className="oddsProvider">
-            ODDS ·{' '}
-            {odds.provider}
-          </div>
-        )}
-    </div>
-  )
-}
 
 function normalizeTeamColor(
   color?: string,
@@ -5926,7 +5491,7 @@ function App() {
           break
         }
 
-        const needed =
+        const needed: LeagueKey[] =
           [
             ...new Set(
               missing.map(
@@ -5934,7 +5499,7 @@ function App() {
                   favorite.league,
               ),
             ),
-          ]
+          ] as LeagueKey[]
 
         const date =
           addDays(
