@@ -3835,3 +3835,203 @@ input {
 .fantasyComparisonSection.bench .fantasyPlayerNameLine strong {
   color: rgba(255, 255, 255, .73);
 }
+
+
+/* --- Focused league quick stats --- */
+
+.nhlLeaderPanel {
+  padding-bottom: 6px;
+}
+
+.nhlLeaderRow {
+  display: block;
+  padding: 6px 0;
+}
+
+.nhlLeaderName {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.nhlLeaderName > span {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, .28);
+  font-size: 6px;
+  font-weight: 900;
+}
+
+.nhlLeaderName > strong {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, .88);
+  font-size: 7px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nhlLeaderRow > em {
+  display: block;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, .45);
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.nflFantasyQuickStats {
+  border-color: rgba(255, 255, 255, .085);
+}
+
+.nflFantasyQuickList {
+  display: grid;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.nflFantasyQuickRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  min-width: 0;
+  padding: 6px 7px;
+  border: 1px solid rgba(255, 255, 255, .065);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .018);
+}
+
+.nflFantasyQuickRow.bench {
+  opacity: .52;
+}
+
+.nflFantasyQuickIdentity {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.nflFantasyQuickIdentity img,
+.nflFantasyQuickPhotoPlaceholder {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  background: rgba(255, 255, 255, .05);
+}
+
+.nflFantasyQuickIdentity > div:last-child {
+  min-width: 0;
+}
+
+.nflFantasyQuickIdentity span,
+.nflFantasyQuickIdentity em {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nflFantasyQuickIdentity span {
+  color: rgba(255, 255, 255, .34);
+  font-size: 5.5px;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.nflFantasyQuickIdentity strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 1px;
+  color: #f5f7fa;
+  font-size: 7px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nflFantasyQuickIdentity em {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, .4);
+  font-size: 5.5px;
+  font-style: normal;
+}
+
+.nflFantasyQuickScores {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 3px;
+  text-align: right;
+}
+
+.nflFantasyQuickScores span {
+  color: rgba(255, 255, 255, .38);
+  font-size: 5.5px;
+  font-weight: 800;
+}
+
+.nflFantasyQuickScores strong {
+  color: rgba(255, 255, 255, .9);
+  font-size: 7px;
+}
+
+.nflFantasyQuickScores .actual strong {
+  color: #67e8a0;
+}
+
+
+/* --- ESPN-style fantasy lineup order + totals --- */
+
+.fantasyTotalRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 38px minmax(0, 1fr);
+  align-items: center;
+  min-height: 44px;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, .035);
+}
+
+.fantasyTotalSide {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 8px;
+}
+
+.fantasyTotalSide.right {
+  justify-content: flex-start;
+}
+
+.fantasyTotalSide span {
+  color: rgba(255, 255, 255, .36);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.fantasyTotalSide strong {
+  color: #f7f8fb;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.fantasyTotalLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  border-left: 1px solid rgba(255, 255, 255, .05);
+  border-right: 1px solid rgba(255, 255, 255, .05);
+  color: rgba(255, 255, 255, .42);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
