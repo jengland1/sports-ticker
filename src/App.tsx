@@ -3615,8 +3615,10 @@ async function fetchFantasyLeague(
 
 function FantasyTeamColumn({
   side,
+  isMyTeam = false,
 }: {
   side: FantasyMatchupSide
+  isMyTeam?: boolean
 }) {
   const starters =
     side.players.filter(
@@ -3628,89 +3630,83 @@ function FantasyTeamColumn({
       (player) => !player.started,
     )
 
-  return (
-    <div className="fantasyTeamColumn">
-      <div className="fantasyTeamScore">
-        <span>
-          {side.teamName}
-        </span>
+  const lineupRow = (
+    player: FantasyPlayer,
+    benchPlayer = false,
+  ) => (
+    <div
+      className={`fantasyLineupRow ${
+        benchPlayer ? 'benchRow' : ''
+      }`}
+      key={player.id}
+    >
+      <span className="fantasySlot">
+        {benchPlayer
+          ? 'BN'
+          : player.lineupSlot}
+      </span>
 
-        <strong>
-          {side.score.toFixed(1)}
-        </strong>
-
-        {side.projected !==
-          undefined && (
-          <em>
-            PROJ {side.projected.toFixed(1)}
-          </em>
-        )}
+      <div className="fantasyPlayerCell">
+        <strong>{player.name}</strong>
+        <span>{player.position}</span>
       </div>
 
-      <div className="fantasyLineupLabel">
-        STARTERS
+      <div className="fantasyPlayerNumbers">
+        {player.projected !==
+          undefined && (
+          <span>
+            {player.projected.toFixed(1)}
+          </span>
+        )}
+
+        <b>
+          {player.points.toFixed(1)}
+        </b>
+      </div>
+    </div>
+  )
+
+  return (
+    <div
+      className={`fantasyTeamColumn ${
+        isMyTeam ? 'isMine' : ''
+      }`}
+    >
+      <div className="fantasyTeamScore compact">
+        <div>
+          <span className="fantasyTeamEyebrow">
+            {isMyTeam
+              ? 'YOUR LINEUP'
+              : 'OPPONENT LINEUP'}
+          </span>
+        </div>
+      </div>
+
+      <div className="fantasyRosterHeader">
+        <span>STARTERS</span>
+        <span>PROJ</span>
+        <span>PTS</span>
       </div>
 
       <div className="fantasyLineup">
-        {starters.map(
-          (player) => (
-            <div
-              className="fantasyLineupRow"
-              key={player.id}
-            >
-              <span className="fantasySlot">
-                {player.lineupSlot}
-              </span>
-
-              <div>
-                <strong>
-                  {player.name}
-                </strong>
-
-                <span>
-                  {player.position}
-                </span>
-              </div>
-
-              <b>
-                {player.points.toFixed(1)}
-              </b>
-            </div>
-          ),
+        {starters.map((player) =>
+          lineupRow(player),
         )}
       </div>
 
       {bench.length > 0 && (
         <>
-          <div className="fantasyLineupLabel bench">
-            BENCH
+          <div className="fantasyRosterHeader benchHeader">
+            <span>BENCH</span>
+            <span>PROJ</span>
+            <span>PTS</span>
           </div>
 
           <div className="fantasyLineup fantasyBench">
-            {bench.map(
-              (player) => (
-                <div
-                  className="fantasyLineupRow"
-                  key={player.id}
-                >
-                  <span className="fantasySlot">
-                    BN
-                  </span>
-
-                  <div>
-                    <strong>
-                      {player.name}
-                    </strong>
-
-                    <span>
-                      {player.position}
-                    </span>
-                  </div>
-
-                  <b>
-                    {player.points.toFixed(1)}
-                  </b>
-                </div>
+            {bench.map((player) =>
+              lineupRow(
+                player,
+                true,
               ),
             )}
           </div>
@@ -3823,16 +3819,17 @@ function NFLFantasyView({
   const matchups =
     leagueData?.matchups || []
 
+  const safeMatchupIndex =
+    Math.min(
+      selectedMatchupIndex,
+      Math.max(
+        0,
+        matchups.length - 1,
+      ),
+    )
+
   const matchup =
-    matchups[
-      Math.min(
-        selectedMatchupIndex,
-        Math.max(
-          0,
-          matchups.length - 1,
-        ),
-      )
-    ]
+    matchups[safeMatchupIndex]
 
   function changeMatchup(
     amount: number,
@@ -3848,30 +3845,73 @@ function NFLFantasyView({
     )
   }
 
+  const awayIsMine =
+    matchup?.away.teamId ===
+    league.teamId
+
+  const homeIsMine =
+    matchup?.home.teamId ===
+    league.teamId
+
+  const awayLeading =
+    Boolean(matchup) &&
+    matchup!.away.score >
+      matchup!.home.score
+
+  const homeLeading =
+    Boolean(matchup) &&
+    matchup!.home.score >
+      matchup!.away.score
+
+  const projectedWinPercentages =
+    matchup?.away.projected !==
+      undefined &&
+    matchup?.home.projected !==
+      undefined
+      ? (() => {
+          const difference =
+            matchup.away.projected -
+            matchup.home.projected
+
+          const awayRaw =
+            1 /
+            (1 +
+              Math.exp(
+                -difference / 12,
+              ))
+
+          const away =
+            Math.round(
+              Math.max(
+                0.05,
+                Math.min(
+                  0.95,
+                  awayRaw,
+                ),
+              ) * 100,
+            )
+
+          return {
+            away,
+            home: 100 - away,
+          }
+        })()
+      : null
+
   return (
     <section className="nflFantasyView">
       <div className="fantasyViewHeader">
         <div>
-          <span>
-            ESPN FANTASY
-          </span>
-
-          <strong>
-            MATCHUP
-          </strong>
+          <span>ESPN FANTASY</span>
+          <strong>MATCHUPS</strong>
         </div>
 
-        <em>
-          WEEK {week}
-        </em>
+        <em>WEEK {week}</em>
       </div>
 
       <div className="fantasyLeagueSwitcher">
         {FANTASY_LEAGUES.map(
-          (
-            item,
-            index,
-          ) => (
+          (item, index) => (
             <button
               type="button"
               key={item.id}
@@ -3903,9 +3943,7 @@ function NFLFantasyView({
             ESPN FANTASY CONNECTION REQUIRED
           </strong>
 
-          <span>
-            {error}
-          </span>
+          <span>{error}</span>
 
           <small>
             Your private ESPN leagues need the
@@ -3927,17 +3965,15 @@ function NFLFantasyView({
               ‹
             </button>
 
-            <div>
-              <span>
-                {leagueData?.leagueName ||
-                  league.name}
-              </span>
+            <div className="fantasyMatchupNames">
+              <strong>
+                {matchup.away.teamName}
+              </strong>
+
+              <span>VS</span>
 
               <strong>
-                MATCHUP{' '}
-                {selectedMatchupIndex +
-                  1}{' '}
-                OF {matchups.length}
+                {matchup.home.teamName}
               </strong>
             </div>
 
@@ -3953,40 +3989,104 @@ function NFLFantasyView({
           </div>
 
           <div className="fantasyMatchupScoreboard">
-            <div>
-              <span>
-                {matchup.away.teamName}
-              </span>
+            <div
+              className={`${
+                awayIsMine
+                  ? 'isMine '
+                  : ''
+              }${
+                awayLeading
+                  ? 'isLeading'
+                  : ''
+              }`}
+            >
+              <small>AWAY</small>
 
               <strong>
                 {matchup.away.score.toFixed(
                   1,
                 )}
               </strong>
+
+              {matchup.away.projected !==
+                undefined && (
+                <div className="fantasyProjection">
+                  <b>
+                    PROJECTED FINAL
+                  </b>
+                  <span>
+                    {matchup.away.projected.toFixed(
+                      1,
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {projectedWinPercentages && (
+                <div className="fantasyWinChance">
+                  <b>PROJ WIN</b>
+                  <span>
+                    {projectedWinPercentages.away}%
+                  </span>
+                </div>
+              )}
             </div>
 
             <em>VS</em>
 
-            <div>
-              <span>
-                {matchup.home.teamName}
-              </span>
+            <div
+              className={`${
+                homeIsMine
+                  ? 'isMine '
+                  : ''
+              }${
+                homeLeading
+                  ? 'isLeading'
+                  : ''
+              }`}
+            >
+              <small>HOME</small>
 
               <strong>
                 {matchup.home.score.toFixed(
                   1,
                 )}
               </strong>
+
+              {matchup.home.projected !==
+                undefined && (
+                <div className="fantasyProjection">
+                  <b>
+                    PROJECTED FINAL
+                  </b>
+                  <span>
+                    {matchup.home.projected.toFixed(
+                      1,
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {projectedWinPercentages && (
+                <div className="fantasyWinChance">
+                  <b>PROJ WIN</b>
+                  <span>
+                    {projectedWinPercentages.home}%
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="fantasyTeamsStack">
             <FantasyTeamColumn
               side={matchup.away}
+              isMyTeam={awayIsMine}
             />
 
             <FantasyTeamColumn
               side={matchup.home}
+              isMyTeam={homeIsMine}
             />
           </div>
         </>
