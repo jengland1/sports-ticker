@@ -1,402 +1,525 @@
 * {
+
   box-sizing: border-box;
+
 }
+
+
 
 :root {
+
   font-family:
+
     "Segoe UI Variable",
+
     "Segoe UI",
+
     Inter,
+
     system-ui,
+
     sans-serif;
 
+
+
   color: #f7f7f5;
+
   font-synthesis: none;
+
 }
+
+
 
 html,
+
 body,
+
 #root {
+
   margin: 0;
+
   min-width: 320px;
+
   min-height: 100%;
+
 }
+
+
 
 body {
+
   min-height: 100vh;
+
+
 
   background:
+
     radial-gradient(
+
       circle at 72% 6%,
+
       rgba(78, 101, 132, 0.16),
+
       transparent 30%
+
     ),
+
     radial-gradient(
+
       circle at 18% 82%,
+
       rgba(40, 53, 68, 0.13),
+
       transparent 36%
+
     ),
+
     linear-gradient(
+
       145deg,
+
       #07090c,
+
       #0b0f13 50%,
+
       #07090b
+
     );
+
 }
+
+
 
 button,
+
 input {
+
   font: inherit;
+
 }
+
+
 
 .screen {
+
   min-height: 100vh;
 
+
+
   display: flex;
+
+
+
   justify-content: flex-end;
+
   align-items: flex-start;
 
-  gap: 10px;
 
-  padding: 14px;
+
+  padding: 12px;
+
 }
 
-/* =====================================================
-   TICKER
-===================================================== */
+
+
+/* =========================================
+
+   MAIN TICKER
+
+\========================================= */
+
+
 
 .ticker {
-  width: 378px;
-  height: calc(100vh - 28px);
 
-  flex: 0 0 378px;
+  width: 350px;
+
+  height: calc(100vh - 24px);
+
+
+
+  flex: 0 0 350px;
+
+
 
   display: flex;
+
   flex-direction: column;
+
+
 
   overflow: hidden;
 
-  position: relative;
+
 
   border:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.09
-    );
+
+    1px solid
+
+    rgba(255, 255, 255, 0.09);
+
+
 
   border-radius: 12px;
 
+
+
   background:
+
     linear-gradient(
+
       180deg,
-      rgba(
-        16,
-        20,
-        24,
-        0.96
-      ),
-      rgba(
-        6,
-        8,
-        10,
-        0.98
-      )
+
+      rgba(16, 20, 24, 0.96),
+
+      rgba(6, 8, 10, 0.98)
+
     );
+
+
 
   box-shadow:
+
     0 24px 70px
-      rgba(
-        0,
-        0,
-        0,
-        0.42
-      ),
+
+      rgba(0, 0, 0, 0.42),
+
     inset 0 1px 0
-      rgba(
-        255,
-        255,
-        255,
-        0.05
-      );
+
+      rgba(255, 255, 255, 0.05);
+
 }
 
-/* =====================================================
+
+
+/* =========================================
+
    CLOCK
-===================================================== */
+
+\========================================= */
+
+
 
 .clockStage {
+
   padding:
-    18px
-    18px
-    14px;
+
+    17px
+
+    16px
+
+    13px;
+
+
 
   border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
+
+    1px solid
+
+    rgba(255, 255, 255, 0.075);
+
+
 
   background:
+
     radial-gradient(
+
       ellipse at 50% 15%,
-      rgba(
-        111,
-        137,
-        168,
-        0.10
-      ),
+
+      rgba(111, 137, 168, 0.10),
+
       transparent 61%
+
     );
+
 }
+
+
 
 .clockDate {
+
   text-align: center;
+
 }
 
+
+
 .clockDate span {
+
   display: block;
+
+
 
   margin-bottom: 5px;
 
+
+
   color:
-    rgba(
-      255,
-      255,
-      255,
-      0.34
-    );
+
+    rgba(255, 255, 255, 0.34);
+
+
 
   font-size: 8px;
+
   font-weight: 900;
+
+
 
   letter-spacing: 0.22em;
+
 }
+
+
 
 .clockDate strong {
+
   display: block;
 
+
+
   color:
-    rgba(
-      255,
-      255,
-      255,
-      0.79
-    );
+
+    rgba(255, 255, 255, 0.80);
+
+
 
   font-size: 13px;
+
   font-weight: 850;
 
-  letter-spacing: 0.09em;
-}
 
-.clockDate i {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.23
-    );
-
-  font-style: normal;
-}
-
-.clockMain {
-  min-height: 86px;
-
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-
-  margin-top: 5px;
-}
-
-.clockDigits {
-  font-size: 82px;
-  font-weight: 500;
-
-  line-height: 0.90;
-
-  letter-spacing: -0.075em;
-
-  font-variant-numeric:
-    tabular-nums;
-
-  text-shadow:
-    0 7px 30px
-      rgba(
-        0,
-        0,
-        0,
-        0.46
-      );
-}
-
-.clockSide {
-  display: flex;
-  flex-direction: column;
-
-  gap: 3px;
-
-  margin-left: 13px;
-  margin-bottom: 8px;
-
-  text-align: left;
-}
-
-.clockSide strong {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.70
-    );
-
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.clockSide span {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.30
-    );
-
-  font-size: 11px;
-
-  font-variant-numeric:
-    tabular-nums;
-}
-
-.clockFooter {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  margin-top: 11px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.24
-    );
-
-  font-size: 7px;
-  font-weight: 900;
-
-  letter-spacing: 0.13em;
-}
-
-.liveStatus {
-  display: flex;
-  align-items: center;
-
-  gap: 6px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.44
-    );
-}
-
-.livePulse {
-  width: 5px;
-  height: 5px;
-
-  border-radius: 50%;
-
-  background: #63dc83;
-
-  box-shadow:
-    0 0 9px
-      rgba(
-        99,
-        220,
-        131,
-        0.60
-      );
-}
-
-.livePulse.error {
-  background: #ff5f56;
-}
-
-/* =====================================================
-   NAV
-===================================================== */
-
-.tickerTabs {
-  display: grid;
-
-  grid-template-columns:
-    repeat(5, 1fr)
-    35px;
-
-  flex: 0 0 auto;
-
-  border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.012
-    );
-}
-
-.tab {
-  height: 36px;
-
-  position: relative;
-
-  border: 0;
-
-  background: transparent;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.31
-    );
-
-  font-size: 8px;
-  font-weight: 900;
 
   letter-spacing: 0.08em;
 
-  cursor: pointer;
 }
 
-.tab:hover {
+
+
+.clockDate i {
+
   color:
-    rgba(
-      255,
-      255,
-      255,
-      0.72
-    );
+
+    rgba(255, 255, 255, 0.23);
+
+
+
+  font-style: normal;
+
+}
+
+
+
+.clockMain {
+
+  min-height: 86px;
+
+
+
+  display: flex;
+
+
+
+  justify-content: center;
+
+  align-items: flex-end;
+
+
+
+  margin-top: 5px;
+
+}
+
+
+
+.clockDigits {
+
+  font-size: 80px;
+
+  font-weight: 500;
+
+
+
+  line-height: 0.90;
+
+
+
+  letter-spacing: -0.075em;
+
+
+
+  font-variant-numeric:
+
+    tabular-nums;
+
+}
+
+
+
+.clockSide {
+
+  display: flex;
+
+  flex-direction: column;
+
+
+
+  gap: 3px;
+
+
+
+  margin-left: 13px;
+
+  margin-bottom: 8px;
+
+}
+
+
+
+.clockSide strong {
+
+  color:
+
+    rgba(255, 255, 255, 0.70);
+
+
+
+  font-size: 11px;
+
+  font-weight: 900;
+
+}
+
+
+
+.clockSide span {
+
+  color:
+
+    rgba(255, 255, 255, 0.30);
+
+
+
+  font-size: 11px;
+
+}
+
+
+
+.clockFooter {
+
+  display: flex;
+
+
+
+  justify-content: space-between;
+
+  align-items: center;
+
+
+
+  margin-top: 11px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.24);
+
+
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+
+
+  letter-spacing: 0.13em;
+
+}
+
+
+
+.liveStatus {
+
+  display: flex;
+
+  align-items: center;
+
+
+
+  gap: 6px;
+
+}
+
+
+
+.livePulse {
+
+  width: 5px;
+
+  height: 5px;
+
+
+
+  border-radius: 50%;
+
+
+
+  background: #63dc83;
+
+
+
+  box-shadow:
+
+    0 0 9px
+
+      rgba(99, 220, 131, 0.6);
+
+}
+
+
+
+.livePulse.error {
+
+  background: #ff5f56;
+
+}
+
+
+
+/* =========================================
+
+   TABS
+
+\========================================= */
+
+
+
+.tickerTabs {
+  display: grid;
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr))
+    34px
+    34px;
+  grid-auto-rows: 35px;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.075);
+
+  overflow: visible;
+}
+
+.tab {
+  height: 35px;
+  position: relative;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.31);
+  font-size: 8px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .tab.active {
@@ -405,20 +528,12 @@ input {
 
 .tab.active::after {
   content: "";
-
   position: absolute;
-
   left: 8px;
   right: 8px;
   bottom: -1px;
-
   height: 2px;
-
-  background:
-    var(
-      --tab-color,
-      white
-    );
+  background: var(--tab-color, white);
 }
 
 .tab-all {
@@ -426,1654 +541,2645 @@ input {
 }
 
 .tab-nhl {
-  --tab-color: #66b9de;
+  --tab-color: #67bbdf;
 }
 
 .tab-nfl {
-  --tab-color: #d3a353;
+  --tab-color: #d1a04f;
 }
 
 .tab-nba {
-  --tab-color: #a978cf;
+  --tab-color: #ab77ce;
 }
 
 .tab-mlb {
-  --tab-color: #cf625e;
+  --tab-color: #cf625f;
 }
 
 .teamsTab {
-  font-size: 11px;
-
   --tab-color: #e4dca6;
+  font-size: 11px;
 }
 
-/* =====================================================
-   NFL WEEK
-===================================================== */
-
-.nflWeekHero {
-  flex: 0 0 auto;
-
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    auto
-    1fr;
-
-  align-items: center;
-
-  padding:
-    11px
-    14px;
-
-  border-bottom:
-    1px solid rgba(
-      211,
-      163,
-      83,
-      0.19
-    );
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(
-        211,
-        163,
-        83,
-        0.09
-      ),
-      rgba(
-        211,
-        163,
-        83,
-        0.025
-      )
-    );
-}
-
-.nflWeekHero span {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.34
-    );
-
-  font-size: 7px;
-  font-weight: 900;
-
-  letter-spacing: 0.13em;
-}
-
-.nflWeekHero strong {
-  color: #e5b86a;
-
-  font-size: 19px;
-  font-weight: 950;
-
-  letter-spacing: -0.035em;
-}
-
-.nflWeekHero em {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.35
-    );
-
-  font-size: 7px;
-  font-weight: 900;
-
-  font-style: normal;
-
-  text-align: right;
-}
-
-/* =====================================================
-   FEED
-===================================================== */
-
-.feed {
-  flex: 1;
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  padding:
-    4px
-    13px
-    24px;
-
-  scroll-behavior: auto;
-
-  scrollbar-width: none;
-}
-
-.feed::-webkit-scrollbar {
-  display: none;
-}
-
-/* =====================================================
-   LEAGUES
-===================================================== */
-
-.league-nhl {
-  --league: #67bbdf;
-  --league-rgb: 103, 187, 223;
-}
-
-.league-nfl {
-  --league: #d1a04f;
-  --league-rgb: 209, 160, 79;
-}
-
-.league-nba {
-  --league: #ab77ce;
-  --league-rgb: 171, 119, 206;
-}
-
-.league-mlb {
-  --league: #cf625f;
-  --league-rgb: 207, 98, 95;
-}
-
-.leagueSection {
-  margin-top: 12px;
-
-  margin-left: -5px;
-  margin-right: -5px;
-
-  padding:
-    8px
-    6px
-    3px;
-
-  border-left:
-    2px solid
-    rgba(
-      var(--league-rgb),
-      0.70
-    );
-
-  border-radius:
-    3px
-    8px
-    8px
-    3px;
-
-  background:
-    linear-gradient(
-      100deg,
-      rgba(
-        var(--league-rgb),
-        0.085
-      ),
-      rgba(
-        var(--league-rgb),
-        0.028
-      )
-      48%,
-      transparent
-    );
-}
-
-.leagueHeader {
-  display: flex;
-  align-items: center;
-
-  gap: 9px;
-
-  margin-bottom: 3px;
-
-  padding:
-    0
-    2px;
-}
-
-.leagueHeader strong {
-  color:
-    var(--league);
-
-  font-size: 9px;
-  font-weight: 950;
-
-  letter-spacing: 0.16em;
-}
-
-.leagueHeader > span {
-  flex: 1;
-
-  height: 1px;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(
-        var(--league-rgb),
-        0.40
-      ),
-      rgba(
-        255,
-        255,
-        255,
-        0.045
-      )
-    );
-}
-
-.leagueHeader em {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.32
-    );
-
-  font-size: 7px;
-  font-weight: 900;
-
-  font-style: normal;
-
-  letter-spacing: 0.07em;
-}
-
-/* =====================================================
-   LOGOS
-===================================================== */
-
-.teamLogo {
-  width: 38px;
-  height: 38px;
-
+.playoffsTab {
+  --tab-color: #f1c75b;
   display: grid;
   place-items: center;
-
-  flex: 0 0 auto;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.46);
 }
 
-.teamLogoLarge {
-  width: 76px;
-  height: 76px;
+.playoffsTab.active {
+  color: #f1c75b;
 }
 
-.teamLogo img {
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  object-fit: contain;
-
-  filter:
-    drop-shadow(
-      0 3px 8px
-        rgba(
-          0,
-          0,
-          0,
-          0.40
-        )
-    );
+.bracketIcon {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.teamLogo span {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.6
-    );
+/* =========================================
 
-  font-size: 8px;
-  font-weight: 900;
-}
+   NFL WEEK
 
-/* =====================================================
-   GAME ROW
-===================================================== */
+\========================================= */
 
-.gameRow {
-  width: 100%;
 
-  padding:
-    11px
-    2px
-    12px;
 
-  display: block;
+.nflWeekHero {
 
-  border: 0;
-
-  border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.065
-    );
-
-  background: transparent;
-
-  color: inherit;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition:
-    background
-    120ms ease;
-}
-
-.gameRow:last-child {
-  border-bottom: 0;
-}
-
-.gameRow:hover {
-  background:
-    linear-gradient(
-      90deg,
-      rgba(
-        255,
-        255,
-        255,
-        0.038
-      ),
-      transparent
-    );
-}
-
-.gameMain {
   display: grid;
 
   grid-template-columns:
-    minmax(0, 1fr)
-    72px
-    minmax(0, 1fr);
+    42px
+    1fr
+    42px;
 
   align-items: center;
 
   gap: 6px;
-}
-
-.teamColumn {
-  min-width: 0;
-
-  display: flex;
-  align-items: center;
-
-  gap: 7px;
-}
-
-.teamColumn.home {
-  justify-content: flex-end;
-
-  text-align: right;
-}
-
-.teamColumn strong {
-  display: block;
-
-  font-size: 17px;
-  font-weight: 950;
-
-  line-height: 1;
-
-  letter-spacing: -0.03em;
-}
-
-.teamColumn span {
-  display: block;
-
-  margin-top: 4px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.37
-    );
-
-  font-size: 8px;
-  font-weight: 700;
-}
-
-.centerColumn {
-  text-align: center;
-}
-
-.centerColumn > strong {
-  display: block;
-
-  font-size: 11px;
-  font-weight: 900;
-
-  white-space: nowrap;
-}
-
-.centerColumn > span {
-  display: block;
-
-  margin-top: 3px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.27
-    );
-
-  font-size: 8px;
-}
-
-.finalCenter {
-  font-size: 13px !important;
-}
-
-/* =====================================================
-   LIVE
-===================================================== */
-
-.liveBanner {
-  display: flex;
-  align-items: center;
-
-  gap: 6px;
-
-  margin-bottom: 7px;
-
-  color: #ff7168;
-
-  font-size: 7px;
-  font-weight: 900;
-
-  letter-spacing: 0.10em;
-}
-
-.liveBanner > span {
-  width: 5px;
-  height: 5px;
-
-  border-radius: 50%;
-
-  background: #ff5046;
-
-  box-shadow:
-    0 0 8px
-      rgba(
-        255,
-        80,
-        70,
-        0.56
-      );
-}
-
-.liveBanner strong {
-  margin-left: auto;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.45
-    );
-
-  font-size: 7px;
-}
-
-.liveScore {
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    auto
-    1fr;
-
-  align-items: center;
-
-  gap: 5px;
-}
-
-.liveScore strong {
-  font-size: 22px;
-  font-weight: 950;
-}
-
-.liveScore span {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.25
-    );
-}
-
-/* =====================================================
-   DETAILS
-===================================================== */
-
-.detailLine {
-  display: flex;
-  justify-content: space-between;
-
-  gap: 8px;
-
-  margin-top: 7px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.30
-    );
-
-  font-size: 7px;
-  font-weight: 800;
-}
-
-.detailLine span {
-  max-width: 48%;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
-}
-
-.detailLine span:last-child {
-  text-align: right;
-}
-
-.networkLine {
-  margin-top: 6px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.47
-    );
-
-  font-size: 7px;
-  font-weight: 850;
-
-  letter-spacing: 0.08em;
-}
-
-/* =====================================================
-   ODDS
-===================================================== */
-
-.oddsBoard {
-  margin-top: 12px;
-
-  border-top:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
-
-  border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
-}
-
-.oddsBoard.compact {
-  margin-top: 9px;
-}
-
-.oddsLine {
-  min-height: 28px;
-
-  display: grid;
-
-  grid-template-columns:
-    50px
-    1fr
-    1fr;
-
-  align-items: center;
-
-  border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.04
-    );
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.77
-    );
-
-  font-size: 8px;
-  font-weight: 800;
-}
-
-.oddsLine:last-of-type {
-  border-bottom: 0;
-}
-
-.oddsLabel {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.27
-    );
-
-  font-size: 7px;
-  font-weight: 900;
-
-  letter-spacing: 0.10em;
-}
-
-.oddsLine > span:nth-child(2) {
-  text-align: left;
-}
-
-.oddsLine > span:nth-child(3) {
-  text-align: right;
-}
-
-.oddsLine em {
-  margin-left: 4px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.47
-    );
-
-  font-size: 7px;
-  font-weight: 750;
-
-  font-style: normal;
-}
-
-.oddsProvider {
-  padding:
-    6px
-    0;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.25
-    );
-
-  font-size: 6px;
-  font-weight: 900;
-
-  letter-spacing: 0.1em;
-}
-
-.oddsUnavailable {
-  margin-top: 10px;
-
-  padding:
-    8px
-    0;
-
-  border-top:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.055
-    );
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.24
-    );
-
-  font-size: 7px;
-  font-weight: 850;
-
-  letter-spacing: 0.08em;
-}
-
-/* =====================================================
-   FINALS
-===================================================== */
-
-.finalsBlock {
-  margin-top: 18px;
-}
-
-.finalsHeader {
-  margin-bottom: 5px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.37
-    );
-
-  font-size: 8px;
-  font-weight: 900;
-
-  letter-spacing: 0.15em;
-}
-
-/* =====================================================
-   FAVORITES
-===================================================== */
-
-.favoritesView {
-  padding-top: 13px;
-}
-
-.favoritesTitle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  padding-bottom: 11px;
-
-  border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
-}
-
-.favoritesTitle > div span {
-  display: block;
-
-  font-size: 12px;
-  font-weight: 950;
-
-  letter-spacing: 0.10em;
-}
-
-.favoritesTitle > div strong {
-  display: block;
-
-  margin-top: 3px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.30
-    );
-
-  font-size: 7px;
-  font-weight: 900;
-
-  letter-spacing: 0.12em;
-}
-
-.favoritesTitle > em {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.33
-    );
-
-  font-size: 7px;
-  font-weight: 900;
-
-  font-style: normal;
-}
-
-.favoriteManager {
-  padding:
-    12px
-    0
-    15px;
-
-  border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
-}
-
-.favoriteChips {
-  display: flex;
-  flex-direction: column;
-
-  gap: 4px;
-}
-
-.favoriteChip {
-  min-height: 39px;
-
-  display: grid;
-
-  grid-template-columns:
-    31px
-    1fr
-    25px;
-
-  align-items: center;
-
-  gap: 8px;
-
-  padding:
-    4px
-    6px;
-
-  border-left:
-    2px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.12
-    );
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.018
-    );
-}
-
-.favoriteChip-nhl {
-  border-left-color:
-    #67bbdf;
-}
-
-.favoriteChip-nfl {
-  border-left-color:
-    #d1a04f;
-}
-
-.favoriteChip-nba {
-  border-left-color:
-    #ab77ce;
-}
-
-.favoriteChip-mlb {
-  border-left-color:
-    #cf625f;
-}
-
-.favoriteChip .teamLogo {
-  width: 29px;
-  height: 29px;
-}
-
-.favoriteChip strong {
-  display: block;
-
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.favoriteChip span {
-  display: block;
-
-  margin-top: 2px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.30
-    );
-
-  font-size: 7px;
-  font-weight: 800;
-}
-
-.favoriteChip button {
-  border: 0;
-
-  background: transparent;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.29
-    );
-
-  font-size: 18px;
-
-  cursor: pointer;
-}
-
-.favoriteChip button:hover {
-  color: white;
-}
-
-.teamSearchBox {
-  margin-top: 11px;
-
-  display: grid;
-
-  grid-template-columns:
-    22px
-    1fr;
-
-  align-items: center;
 
   padding:
     8px
     10px;
 
-  border:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.09
-    );
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.025
-    );
-}
-
-.teamSearchBox > span {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.36
-    );
-
-  font-size: 16px;
-}
-
-.teamSearchBox input {
-  width: 100%;
-
-  border: 0;
-  outline: 0;
-
-  background: transparent;
-
-  color: white;
-
-  font-size: 10px;
-}
-
-.teamSearchBox input::placeholder {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.28
-    );
-}
-
-.teamSearchResults {
-  border:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
-
-  border-top: 0;
-}
-
-.teamSearchResults > button {
-  width: 100%;
-
-  min-height: 42px;
-
-  display: grid;
-
-  grid-template-columns:
-    31px
-    1fr
-    auto;
-
-  align-items: center;
-
-  gap: 9px;
-
-  padding:
-    5px
-    8px;
-
-  border: 0;
-
   border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.045
-    );
+    1px solid
+    rgba(211, 163, 83, 0.19);
 
   background:
-    rgba(
-      255,
-      255,
-      255,
-      0.016
+    linear-gradient(
+      90deg,
+      rgba(211, 163, 83, 0.09),
+      rgba(211, 163, 83, 0.025)
     );
 
-  color: white;
-
-  text-align: left;
-
-  cursor: pointer;
 }
 
-.teamSearchResults > button:hover {
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.045
-    );
+.nflWeekTitle {
+
+  min-width: 0;
+
+  text-align: center;
+
 }
 
-.teamSearchResults .teamLogo {
-  width: 29px;
-  height: 29px;
-}
+.nflWeekTitle span,
+.nflWeekTitle em {
 
-.teamSearchResults strong {
   display: block;
 
-  font-size: 9px;
-}
-
-.teamSearchResults span {
-  display: block;
-
-  margin-top: 2px;
-
   color:
-    rgba(
-      255,
-      255,
-      255,
-      0.30
-    );
-
-  font-size: 7px;
-}
-
-.teamSearchResults em {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.34
-    );
+    rgba(255, 255, 255, 0.35);
 
   font-size: 7px;
   font-weight: 900;
 
   font-style: normal;
+
+  letter-spacing: 0.12em;
+
 }
 
-.favoriteNextLabel {
-  margin-top: 15px;
+.nflWeekTitle strong {
 
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.31
-    );
+  display: block;
 
-  font-size: 7px;
-  font-weight: 900;
+  margin: 2px 0;
 
-  letter-spacing: 0.13em;
+  color: #e5b86a;
+
+  font-size: 19px;
+  font-weight: 950;
+
+  letter-spacing: 0.035em;
+
 }
 
-.favoriteGameRow {
-  width: 100%;
+.nflWeekArrow {
 
-  padding:
-    14px
-    1px;
+  width: 40px;
+  height: 40px;
 
-  border: 0;
+  display: grid;
+  place-items: center;
 
-  border-bottom:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.07
-    );
+  padding: 0;
 
-  background: transparent;
+  border:
+    1px solid
+    rgba(229, 184, 106, 0.28);
 
-  color: white;
+  border-radius: 9px;
+
+  background:
+    rgba(229, 184, 106, 0.16);
+
+  color: #ffd28b;
+
+  font-size: 30px;
+  font-weight: 800;
+
+  line-height: 1;
 
   cursor: pointer;
 
-  text-align: left;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
+
 }
 
-.favoriteLeague {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.33
-    );
+.nflWeekArrow:hover {
 
-  font-size: 7px;
-  font-weight: 900;
+  border-color:
+    rgba(229, 184, 106, 0.55);
 
-  letter-spacing: 0.14em;
+  background:
+    rgba(229, 184, 106, 0.14);
+
 }
 
-.favoriteMatchup {
-  display: grid;
+.nflWeekArrow:active {
 
-  grid-template-columns:
-    1fr
-    auto
-    1fr;
+  transform: scale(0.94);
 
-  align-items: center;
-
-  gap: 10px;
-
-  margin-top: 9px;
 }
 
-.favoriteMatchup > div {
-  display: flex;
-  align-items: center;
+.nflWeekArrow:focus-visible {
 
-  gap: 8px;
+  outline:
+    2px solid
+    rgba(229, 184, 106, 0.75);
+
+  outline-offset: 2px;
+
 }
 
-.favoriteMatchup > div:last-child {
-  justify-content: flex-end;
-}
+/* =========================================
 
-.favoriteMatchup strong {
-  font-size: 18px;
-  font-weight: 950;
-}
+   FEED
 
-.favoriteMatchup > span {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.63
-    );
+\========================================= */
 
-  font-size: 8px;
-  font-weight: 850;
 
-  white-space: nowrap;
-}
 
-/* =====================================================
-   DRAWER
-===================================================== */
+.feed {
 
-.gameDrawer {
-  width: 480px;
-  height: calc(100vh - 28px);
+  flex: 1;
 
-  flex: 0 0 480px;
 
-  padding: 23px;
 
   overflow-y: auto;
 
-  position: relative;
+  overflow-x: hidden;
 
-  border:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.10
-    );
 
-  border-radius: 12px;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(
-        18,
-        22,
-        26,
-        0.98
-      ),
-      rgba(
-        7,
-        9,
-        11,
-        0.99
-      )
-    );
+  padding:
 
-  box-shadow:
-    0 20px 60px
-      rgba(
-        0,
-        0,
-        0,
-        0.4
-      );
+    4px
+
+    11px
+
+    24px;
+
+
 
   scrollbar-width: none;
+
 }
 
-.gameDrawer::-webkit-scrollbar {
+
+
+.feed::-webkit-scrollbar {
+
   display: none;
+
 }
 
-.drawerClose {
-  position: absolute;
 
-  top: 12px;
-  right: 14px;
 
-  border: 0;
+/* =========================================
 
-  background: transparent;
+   LEAGUES
 
-  color:
+\========================================= */
+
+
+
+.league-nhl {
+
+  \--league: #67bbdf;
+
+  \--league-rgb: 103, 187, 223;
+
+}
+
+
+
+.league-nfl {
+
+  \--league: #d1a04f;
+
+  \--league-rgb: 209, 160, 79;
+
+}
+
+
+
+.league-nba {
+
+  \--league: #ab77ce;
+
+  \--league-rgb: 171, 119, 206;
+
+}
+
+
+
+.league-mlb {
+
+  \--league: #cf625f;
+
+  \--league-rgb: 207, 98, 95;
+
+}
+
+
+
+.leagueSection {
+
+  margin-top: 12px;
+
+
+
+  padding:
+
+    8px
+
+    6px
+
+    3px;
+
+
+
+  border-left:
+
+    2px solid
+
     rgba(
-      255,
-      255,
-      255,
-      0.50
+
+      var(--league-rgb),
+
+      0.70
+
     );
 
-  font-size: 24px;
 
-  cursor: pointer;
+
+  border-radius:
+
+    3px
+
+    8px
+
+    8px
+
+    3px;
+
+
+
+  background:
+
+    linear-gradient(
+
+      100deg,
+
+      rgba(
+
+        var(--league-rgb),
+
+        0.085
+
+      ),
+
+      rgba(
+
+        var(--league-rgb),
+
+        0.028
+
+      )
+
+      48%,
+
+      transparent
+
+    );
+
 }
 
-.drawerLeague {
-  font-size: 8px;
-  font-weight: 900;
 
-  letter-spacing: 0.18em;
 
-  text-align: center;
-}
+.leagueHeader {
 
-.drawer-nhl {
-  color: #67bbdf;
-}
+  display: flex;
 
-.drawer-nfl {
-  color: #d1a04f;
-}
 
-.drawer-nba {
-  color: #ab77ce;
-}
-
-.drawer-mlb {
-  color: #cf625f;
-}
-
-.drawerHero {
-  margin-top: 25px;
-
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    110px
-    1fr;
 
   align-items: center;
 
-  gap: 15px;
-}
 
-.drawerTeam {
-  text-align: center;
-}
-
-.drawerTeam .teamLogo {
-  margin: 0 auto;
-}
-
-.drawerTeam strong {
-  display: block;
-
-  margin-top: 8px;
-
-  font-size: 25px;
-  font-weight: 950;
-}
-
-.drawerTeam span {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.38
-    );
-
-  font-size: 9px;
-}
-
-.drawerCenter {
-  text-align: center;
-}
-
-.drawerTime {
-  font-size: 23px;
-  font-weight: 950;
-}
-
-.drawerAt {
-  margin-top: 2px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.30
-    );
-}
-
-.drawerNetwork {
-  margin-top: 6px;
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.46
-    );
-
-  font-size: 8px;
-}
-
-.drawerLive {
-  color: #ff6057;
-
-  font-size: 8px;
-  font-weight: 900;
-}
-
-.drawerFinal {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.45
-    );
-
-  font-size: 8px;
-  font-weight: 900;
-}
-
-.drawerScore {
-  margin-top: 5px;
-
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    auto
-    1fr;
 
   gap: 8px;
+
+
+
+  margin-bottom: 3px;
+
 }
 
-.drawerScore strong {
-  font-size: 30px;
+
+
+.leagueHeader strong {
+
+  color: var(--league);
+
+
+
+  font-size: 9px;
+
   font-weight: 950;
+
+
+
+  letter-spacing: 0.15em;
+
 }
 
-.drawerScore span {
-  color:
+
+
+.leagueHeader > span {
+
+  flex: 1;
+
+
+
+  height: 1px;
+
+
+
+  background:
+
     rgba(
-      255,
-      255,
-      255,
-      0.25
+
+      var(--league-rgb),
+
+      0.35
+
     );
+
 }
 
-.drawerStatus {
-  margin-top: 5px;
+
+
+.leagueHeader em {
 
   color:
-    rgba(
-      255,
-      255,
-      255,
-      0.42
-    );
 
-  font-size: 8px;
+    rgba(255, 255, 255, 0.32);
+
+
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+
+
+  font-style: normal;
+
 }
 
-.drawerStandings {
-  margin-top: 20px;
+
+
+/* =========================================
+
+   LOGOS
+
+\========================================= */
+
+
+
+.teamLogo {
+
+  width: 36px;
+
+  height: 36px;
+
+
+
+  flex: 0 0 auto;
+
+
 
   display: grid;
 
-  grid-template-columns:
-    1fr
-    1fr;
+  place-items: center;
 
-  gap: 20px;
-
-  padding-top: 12px;
-
-  border-top:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.08
-    );
-
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.35
-    );
-
-  font-size: 8px;
-  font-weight: 800;
 }
 
-.drawerStandings div:last-child {
-  text-align: right;
+
+
+.teamLogoLarge {
+
+  width: 78px;
+
+  height: 78px;
+
 }
 
-.drawerSection {
-  padding:
-    18px
-    0;
 
-  border-top:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.08
-    );
-}
 
-.drawerStandings +
-.drawerSection {
-  margin-top: 17px;
-}
+.teamLogo img {
 
-.drawerLabel {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.37
-    );
-
-  font-size: 8px;
-  font-weight: 900;
-
-  letter-spacing: 0.15em;
-}
-
-.matchupNames {
-  margin-top: 10px;
-
-  display: flex;
-  justify-content: space-between;
-
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.espnButton {
   width: 100%;
 
-  margin-top: 20px;
+  height: 100%;
 
-  padding: 13px;
 
-  border:
-    1px solid rgba(
-      255,
-      255,
-      255,
-      0.13
+
+  object-fit: contain;
+
+
+
+  filter:
+
+    drop-shadow(
+
+      0 3px 8px
+
+        rgba(0, 0, 0, 0.4)
+
     );
+
+}
+
+
+
+.teamLogo span {
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+}
+
+
+
+/* =========================================
+
+   GAME ROW
+
+\========================================= */
+
+
+
+.gameRow {
+
+  width: 100%;
+
+
+
+  padding:
+
+    11px
+
+    1px
+
+    12px;
+
+
+
+  border: 0;
+
+
+
+  border-bottom:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.065);
+
+
 
   background: transparent;
 
-  color: white;
 
-  font-size: 10px;
-  font-weight: 900;
+
+  color: inherit;
+
+
+
+  text-align: left;
+
+
 
   cursor: pointer;
+
 }
 
-.espnButton:hover:not(
-    :disabled
-  ) {
+
+
+.gameMain {
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    minmax(0, 1fr)
+
+    86px
+
+    minmax(0, 1fr);
+
+
+
+  align-items: center;
+
+
+
+  gap: 4px;
+
+}
+
+
+
+.teamColumn {
+
+  min-width: 0;
+
+
+
+  display: flex;
+
+  align-items: center;
+
+
+
+  gap: 6px;
+
+}
+
+
+
+.teamColumn.home {
+
+  justify-content: flex-end;
+
+
+
+  text-align: right;
+
+}
+
+
+
+.teamColumn strong {
+
+  display: block;
+
+
+
+  font-size: 17px;
+
+  font-weight: 950;
+
+
+
+  line-height: 1;
+
+}
+
+
+
+.teamColumn span {
+
+  display: block;
+
+
+
+  margin-top: 4px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.38);
+
+
+
+  font-size: 8px;
+
+}
+
+
+
+.centerColumn {
+
+  text-align: center;
+
+}
+
+
+
+.centerColumn > strong {
+
+  display: block;
+
+
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+
+
+  white-space: nowrap;
+
+}
+
+
+
+.centerColumn > span {
+
+  display: block;
+
+
+
+  margin-top: 3px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.27);
+
+
+
+  font-size: 8px;
+
+}
+
+
+
+.finalCenter {
+
+  font-size: 13px !important;
+
+}
+
+
+
+/* =========================================
+
+   LIVE
+
+\========================================= */
+
+
+
+.liveBanner {
+
+  display: flex;
+
+  align-items: center;
+
+
+
+  gap: 6px;
+
+
+
+  margin-bottom: 7px;
+
+
+
+  color: #ff7168;
+
+
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+}
+
+
+
+.liveBanner > span {
+
+  width: 5px;
+
+  height: 5px;
+
+
+
+  border-radius: 50%;
+
+
+
+  background: #ff5046;
+
+}
+
+
+
+.liveBanner strong {
+
+  margin-left: auto;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.45);
+
+
+
+  font-size: 7px;
+
+}
+
+
+
+.liveScore {
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    1fr
+
+    auto
+
+    1fr;
+
+
+
+  align-items: center;
+
+
+
+  gap: 4px;
+
+}
+
+
+
+.liveScore strong {
+
+  font-size: 21px;
+
+  font-weight: 950;
+
+}
+
+
+
+/* =========================================
+
+   DETAILS
+
+\========================================= */
+
+
+
+.detailLine {
+
+  display: flex;
+
+
+
+  justify-content: space-between;
+
+
+
+  gap: 8px;
+
+
+
+  margin-top: 7px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.30);
+
+
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+}
+
+
+
+.detailLine span {
+
+  max-width: 48%;
+
+
+
+  overflow: hidden;
+
+
+
+  white-space: nowrap;
+
+
+
+  text-overflow: ellipsis;
+
+}
+
+
+
+.networkLine {
+
+  margin-top: 6px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.47);
+
+
+
+  font-size: 7px;
+
+  font-weight: 850;
+
+}
+
+
+
+/* =========================================
+
+   ODDS
+
+\========================================= */
+
+
+
+.oddsBoard {
+
+  margin-top: 11px;
+
+
+
+  border-top:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.075);
+
+
+
+  border-bottom:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.075);
+
+}
+
+
+
+.oddsLine {
+
+  min-height: 27px;
+
+
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    46px
+
+    1fr
+
+    1fr;
+
+
+
+  align-items: center;
+
+
+
+  border-bottom:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.04);
+
+
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+}
+
+
+
+.oddsLabel {
+
+  color:
+
+    rgba(255, 255, 255, 0.27);
+
+
+
+  font-size: 7px;
+
+}
+
+
+
+.oddsLine > span:nth-child(3) {
+
+  text-align: right;
+
+}
+
+
+
+.oddsLine em {
+
+  margin-left: 3px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.48);
+
+
+
+  font-size: 7px;
+
+
+
+  font-style: normal;
+
+}
+
+
+
+.oddsProvider {
+
+  padding:
+
+    6px
+
+    0;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.25);
+
+
+
+  font-size: 6px;
+
+}
+
+
+
+.oddsUnavailable {
+
+  margin-top: 10px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.28);
+
+
+
+  font-size: 7px;
+
+}
+
+
+
+/* =========================================
+
+   FAVORITES
+
+\========================================= */
+
+
+
+.favoritesView {
+
+  padding-top: 13px;
+
+}
+
+
+
+.favoritesTitle {
+
+  display: flex;
+
+
+
+  justify-content: space-between;
+
+
+
+  padding-bottom: 11px;
+
+
+
+  border-bottom:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.075);
+
+}
+
+
+
+.favoritesTitle span {
+
+  font-size: 12px;
+
+  font-weight: 950;
+
+}
+
+
+
+.favoritesTitle strong,
+
+.favoritesTitle em {
+
+  display: block;
+
+
+
+  margin-top: 3px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.30);
+
+
+
+  font-size: 7px;
+
+  font-style: normal;
+
+}
+
+
+
+.favoriteManager {
+
+  padding:
+
+    12px
+
+    0;
+
+}
+
+
+
+.favoriteChips {
+
+  display: flex;
+
+  flex-direction: column;
+
+
+
+  gap: 4px;
+
+}
+
+
+
+.favoriteChip {
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    30px
+
+    1fr
+
+    24px;
+
+
+
+  align-items: center;
+
+
+
+  gap: 7px;
+
+
+
+  padding:
+
+    5px
+
+    6px;
+
+
+
   background:
-    rgba(
-      255,
-      255,
-      255,
-      0.05
+
+    rgba(255, 255, 255, 0.018);
+
+}
+
+
+
+.favoriteChip .teamLogo {
+
+  width: 28px;
+
+  height: 28px;
+
+}
+
+
+
+.favoriteChip button {
+
+  border: 0;
+
+
+
+  background: transparent;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.3);
+
+
+
+  cursor: pointer;
+
+}
+
+
+
+.teamSearchBox {
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    20px
+
+    1fr;
+
+
+
+  align-items: center;
+
+
+
+  margin-top: 10px;
+
+
+
+  padding:
+
+    8px;
+
+
+
+  border:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.09);
+
+}
+
+
+
+.teamSearchBox input {
+
+  width: 100%;
+
+
+
+  border: 0;
+
+  outline: 0;
+
+
+
+  background: transparent;
+
+
+
+  color: white;
+
+
+
+  font-size: 10px;
+
+}
+
+
+
+.teamSearchResults > button {
+
+  width: 100%;
+
+
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    30px
+
+    1fr
+
+    auto;
+
+
+
+  align-items: center;
+
+
+
+  gap: 8px;
+
+
+
+  padding:
+
+    7px;
+
+
+
+  border: 0;
+
+
+
+  border-bottom:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.05);
+
+
+
+  background: transparent;
+
+
+
+  color: white;
+
+
+
+  text-align: left;
+
+
+
+  cursor: pointer;
+
+}
+
+
+
+.teamSearchResults .teamLogo {
+
+  width: 28px;
+
+  height: 28px;
+
+}
+
+
+
+.teamSearchResults span,
+
+.teamSearchResults em {
+
+  color:
+
+    rgba(255, 255, 255, 0.3);
+
+
+
+  font-size: 7px;
+
+  font-style: normal;
+
+}
+
+
+
+.favoriteNextLabel {
+
+  margin-top: 14px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.31);
+
+
+
+  font-size: 7px;
+
+}
+
+
+
+.favoriteGameRow {
+
+  width: 100%;
+
+
+
+  padding:
+
+    14px
+
+    1px;
+
+
+
+  border: 0;
+
+
+
+  border-bottom:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.07);
+
+
+
+  background: transparent;
+
+
+
+  color: white;
+
+
+
+  cursor: pointer;
+
+}
+
+
+
+.favoriteLeague {
+
+  font-size: 7px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.33);
+
+}
+
+
+
+.favoriteMatchup {
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    1fr
+
+    auto
+
+    1fr;
+
+
+
+  align-items: center;
+
+
+
+  gap: 8px;
+
+
+
+  margin-top: 9px;
+
+}
+
+
+
+.favoriteMatchup > div {
+
+  display: flex;
+
+
+
+  align-items: center;
+
+
+
+  gap: 7px;
+
+}
+
+
+
+.favoriteMatchup > div:last-child {
+
+  justify-content: flex-end;
+
+}
+
+
+
+.favoriteMatchup strong {
+
+  font-size: 17px;
+
+}
+
+
+
+.favoriteMatchup > span {
+
+  font-size: 8px;
+
+}
+
+
+
+/* =========================================
+
+   POPUP DETAIL WINDOW
+
+\========================================= */
+
+
+
+.popupScreen {
+
+  min-height: 100vh;
+
+
+
+  padding: 10px;
+
+
+
+  background:
+
+    linear-gradient(
+
+      180deg,
+
+      #0b0e12,
+
+      #06080a
+
     );
+
 }
 
-.espnButton:disabled {
-  opacity: 0.3;
+
+
+.gameDrawer {
+
+  width: 480px;
+
+
+
+  padding: 23px;
+
+
+
+  border:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.10);
+
+
+
+  border-radius: 12px;
+
+
+
+  background:
+
+    linear-gradient(
+
+      180deg,
+
+      rgba(18, 22, 26, 0.98),
+
+      rgba(7, 9, 11, 0.99)
+
+    );
+
+
+
+  position: relative;
+
+
+
+  color: white;
+
 }
 
-/* =====================================================
-   ERROR
-===================================================== */
+
+
+.popupDrawer {
+
+  width: 100%;
+
+
+
+  min-height:
+
+    calc(100vh - 20px);
+
+
+
+  border-radius: 10px;
+
+}
+
+
+
+.popupMissing {
+
+  color:
+
+    rgba(255, 255, 255, 0.6);
+
+
+
+  padding: 30px;
+
+}
+
+
+
+.drawerClose {
+
+  position: absolute;
+
+
+
+  top: 12px;
+
+  right: 14px;
+
+
+
+  border: 0;
+
+
+
+  background: transparent;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.5);
+
+
+
+  font-size: 24px;
+
+
+
+  cursor: pointer;
+
+}
+
+
+
+.drawerLeague {
+
+  text-align: center;
+
+
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+
+
+  letter-spacing: 0.18em;
+
+}
+
+
+
+.drawer-nhl {
+
+  color: #67bbdf;
+
+}
+
+
+
+.drawer-nfl {
+
+  color: #d1a04f;
+
+}
+
+
+
+.drawer-nba {
+
+  color: #ab77ce;
+
+}
+
+
+
+.drawer-mlb {
+
+  color: #cf625f;
+
+}
+
+
+
+.drawerHero {
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    1fr
+
+    120px
+
+    1fr;
+
+
+
+  align-items: center;
+
+
+
+  gap: 15px;
+
+
+
+  margin-top: 26px;
+
+}
+
+
+
+.drawerTeam {
+
+  text-align: center;
+
+}
+
+
+
+.drawerTeam .teamLogo {
+
+  margin: 0 auto;
+
+}
+
+
+
+.drawerTeam strong {
+
+  display: block;
+
+
+
+  margin-top: 8px;
+
+
+
+  font-size: 25px;
+
+  font-weight: 950;
+
+}
+
+
+
+.drawerTeam span {
+
+  color:
+
+    rgba(255, 255, 255, 0.38);
+
+
+
+  font-size: 9px;
+
+}
+
+
+
+.drawerCenter {
+
+  text-align: center;
+
+}
+
+
+
+.drawerTime {
+
+  font-size: 20px;
+
+  font-weight: 950;
+
+
+
+  white-space: nowrap;
+
+}
+
+
+
+.drawerAt {
+
+  margin-top: 4px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.3);
+
+}
+
+
+
+.drawerNetwork {
+
+  margin-top: 6px;
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.46);
+
+
+
+  font-size: 8px;
+
+}
+
+
+
+.drawerLive {
+
+  color: #ff6057;
+
+
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+}
+
+
+
+.drawerFinal {
+
+  color:
+
+    rgba(255, 255, 255, 0.45);
+
+
+
+  font-size: 8px;
+
+}
+
+
+
+.drawerScore {
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    1fr
+
+    auto
+
+    1fr;
+
+
+
+  gap: 8px;
+
+
+
+  margin-top: 5px;
+
+}
+
+
+
+.drawerScore strong {
+
+  font-size: 30px;
+
+}
+
+
+
+.drawerStandings {
+
+  display: grid;
+
+
+
+  grid-template-columns:
+
+    1fr
+
+    1fr;
+
+
+
+  gap: 20px;
+
+
+
+  margin-top: 20px;
+
+
+
+  padding-top: 12px;
+
+
+
+  border-top:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.08);
+
+
+
+  color:
+
+    rgba(255, 255, 255, 0.35);
+
+
+
+  font-size: 8px;
+
+}
+
+
+
+.drawerStandings div:last-child {
+
+  text-align: right;
+
+}
+
+
+
+.drawerSection {
+
+  margin-top: 18px;
+
+
+
+  padding-top: 18px;
+
+
+
+  border-top:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.08);
+
+}
+
+
+
+.drawerLabel {
+
+  color:
+
+    rgba(255, 255, 255, 0.37);
+
+
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+
+
+  letter-spacing: 0.15em;
+
+}
+
+
+
+.matchupNames {
+
+  display: flex;
+
+
+
+  justify-content: space-between;
+
+
+
+  margin-top: 11px;
+
+
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+}
+
+
+
+.espnButton {
+
+  width: 100%;
+
+
+
+  margin-top: 22px;
+
+
+
+  padding: 13px;
+
+
+
+  border:
+
+    1px solid
+
+    rgba(255, 255, 255, 0.13);
+
+
+
+  background: transparent;
+
+
+
+  color: white;
+
+
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+
+
+  cursor: pointer;
+
+}
+
+
 
 .dataError {
-  padding:
-    10px
-    0;
+
+  padding: 10px 0;
+
+
 
   color: #ff8f88;
 
+
+
   font-size: 9px;
+
 }
 
-/* =====================================================
-   SMALL SCREEN
-===================================================== */
+/* =========================================
+   SPORT QUICK STATS + NFL FANTASY
+========================================= */
 
-@media (
-  max-width: 700px
-) {
-  .screen {
-    flex-direction:
-      column-reverse;
+.gameQuickStats {
+  margin-top: 11px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.028);
+}
 
-    padding: 9px;
-  }
+.quickStatTitle {
+  margin-bottom: 9px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: 0.11em;
+}
 
-  .ticker,
-  .gameDrawer {
-    width: 100%;
-    height: auto;
+.quickTeamGrid,
+.quickFeatureGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
 
-    flex-basis: auto;
-  }
+.quickTeamPanel,
+.quickFeaturePlayer {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.022);
+}
 
-  .clockDigits {
-    font-size: 68px;
-  }
+.quickTeamCode {
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 7px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+}
+
+.quickLeaderList {
+  display: grid;
+  gap: 4px;
+}
+
+.quickLeaderRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 8px;
+}
+
+.quickLeaderRow span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quickLeaderRow strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 7px;
+}
+
+.quickUnavailable {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+.quickStarter,
+.quickFeaturePlayer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.quickStarter {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+}
+
+.quickHeadshot {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.quickHeadshotEmpty {
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 8px;
+  font-weight: 950;
+}
+
+.quickStarter > div,
+.quickFeaturePlayer > div {
+  min-width: 0;
+}
+
+.quickStarter span,
+.quickFeaturePlayer span,
+.quickTopPlayer span {
+  display: block;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.quickStarter strong,
+.quickFeaturePlayer strong,
+.quickTopPlayer strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 9px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quickStarter em,
+.quickFeaturePlayer em,
+.quickTopPlayer em {
+  display: block;
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.quickTopPlayer {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+}
+
+.nflFantasyToggle {
+  margin-top: 7px;
+  padding: 5px 9px;
+  border: 1px solid rgba(209, 160, 79, 0.3);
+  border-radius: 999px;
+  background: rgba(209, 160, 79, 0.08);
+  color: #d9ad66;
+  font-size: 7px;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+  cursor: pointer;
+}
+
+.nflFantasyToggle.active {
+  background: rgba(209, 160, 79, 0.18);
+  color: #f3cb8d;
+}
+
+.nflFantasyView {
+  padding: 12px 4px 24px;
+}
+
+.fantasyViewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 8px 6px 11px;
+  border-bottom: 1px solid rgba(209, 160, 79, 0.16);
+}
+
+.fantasyViewHeader span,
+.fantasyViewHeader em {
+  display: block;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.fantasyViewHeader strong {
+  display: block;
+  margin-top: 3px;
+  color: #d9ad66;
+  font-size: 16px;
+  font-weight: 1000;
+}
+
+.fantasyLoading {
+  padding: 28px 10px;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.fantasyPlayerList {
+  display: grid;
+}
+
+.fantasyPlayerRow {
+  display: grid;
+  grid-template-columns: 20px 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  min-height: 48px;
+  padding: 7px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.fantasyRank {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 7px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.fantasyPlayerRow .quickHeadshot {
+  width: 32px;
+  height: 32px;
+  flex-basis: 32px;
+}
+
+.fantasyPlayerInfo {
+  min-width: 0;
+}
+
+.fantasyPlayerInfo strong {
+  display: block;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 9px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasyPlayerInfo span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.31);
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.fantasyPoints {
+  min-width: 42px;
+  text-align: right;
+}
+
+.fantasyPoints strong {
+  display: block;
+  color: #e9be78;
+  font-size: 15px;
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+}
+
+.fantasyPoints span {
+  display: block;
+  margin-top: 1px;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 6px;
+  font-weight: 900;
+}
+
+
+/* =========================================
+   ESPN FANTASY MATCHUPS
+========================================= */
+
+.nflFantasyView {
+  padding: 12px 4px 28px;
+}
+
+.fantasyLeagueSwitcher {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  margin: 10px 0 12px;
+}
+
+.fantasyLeagueSwitcher button {
+  min-width: 0;
+  padding: 7px 5px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 7px;
+  font-weight: 950;
+  line-height: 1.15;
+  cursor: pointer;
+}
+
+.fantasyLeagueSwitcher button.active {
+  border-color: rgba(229, 184, 106, 0.46);
+  background: rgba(229, 184, 106, 0.13);
+  color: #f3cb8d;
+}
+
+.fantasyMatchupNav {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 9px 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.fantasyMatchupNav button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(229, 184, 106, 0.24);
+  border-radius: 9px;
+  background: rgba(229, 184, 106, 0.08);
+  color: #f3cb8d;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fantasyMatchupNav > div {
+  min-width: 0;
+  text-align: center;
+}
+
+.fantasyMatchupNav span {
+  display: block;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 7px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasyMatchupNav strong {
+  display: block;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+}
+
+.fantasyMatchupScoreboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+  padding: 12px 8px;
+  border: 1px solid rgba(209, 160, 79, 0.13);
+  border-radius: 11px;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(209, 160, 79, 0.075),
+      rgba(255, 255, 255, 0.018)
+    );
+}
+
+.fantasyMatchupScoreboard > div {
+  min-width: 0;
+  text-align: center;
+}
+
+.fantasyMatchupScoreboard span {
+  display: block;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 8px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasyMatchupScoreboard strong {
+  display: block;
+  margin-top: 5px;
+  color: #fff;
+  font-size: 25px;
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+}
+
+.fantasyMatchupScoreboard em {
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 950;
+  text-align: center;
+}
+
+.fantasyTeamsStack {
+  display: grid;
+  gap: 10px;
+}
+
+.fantasyTeamColumn {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.fantasyTeamScore {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fantasyTeamScore > span {
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 10px;
+  font-weight: 1000;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasyTeamScore > strong {
+  color: #f1c77f;
+  font-size: 18px;
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+}
+
+.fantasyTeamScore > em {
+  grid-column: 1 / -1;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.fantasyLineupLabel {
+  padding: 8px 9px 5px;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 6px;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+}
+
+.fantasyLineupLabel.bench {
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fantasyLineup {
+  display: grid;
+}
+
+.fantasyLineupRow {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 42px;
+  align-items: center;
+  gap: 7px;
+  min-height: 39px;
+  padding: 6px 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.035);
+}
+
+.fantasySlot {
+  color: #d9ad66;
+  font-size: 7px;
+  font-weight: 1000;
+}
+
+.fantasyLineupRow > div {
+  min-width: 0;
+}
+
+.fantasyLineupRow > div strong {
+  display: block;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 8px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasyLineupRow > div span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.26);
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.fantasyLineupRow > b {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 10px;
+  font-weight: 1000;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.fantasyBench .fantasyLineupRow {
+  opacity: 0.68;
+}
+
+.fantasyConnectCard {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 15px 12px;
+  border: 1px solid rgba(255, 183, 77, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 183, 77, 0.045);
+  text-align: center;
+}
+
+.fantasyConnectCard strong {
+  color: #f0bd70;
+  font-size: 8px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+}
+
+.fantasyConnectCard span,
+.fantasyConnectCard small {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.fantasyConnectCard small {
+  color: rgba(255, 255, 255, 0.25);
 }
