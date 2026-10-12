@@ -2909,63 +2909,111 @@ input {
 
 
 /* =========================================
-   ESPN FANTASY MATCHUPS
+   ESPN FANTASY MATCHUPS — POLISHED
 ========================================= */
 
 .nflFantasyView {
-  padding: 12px 4px 28px;
+  padding: 10px 7px 28px;
+}
+
+.fantasyViewHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 3px 10px;
+  border-bottom: 1px solid rgba(229, 184, 106, 0.16);
+}
+
+.fantasyViewHeader span,
+.fantasyViewHeader em {
+  display: block;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.fantasyViewHeader strong {
+  display: block;
+  margin-top: 2px;
+  color: #f3cb8d;
+  font-size: 14px;
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+}
+
+.fantasyLoading {
+  padding: 32px 12px;
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.55;
+  text-align: center;
 }
 
 .fantasyLeagueSwitcher {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 5px;
-  margin: 10px 0 12px;
+  margin: 10px 0;
 }
 
 .fantasyLeagueSwitcher button {
   min-width: 0;
+  min-height: 34px;
   padding: 7px 5px;
-  border: 1px solid rgba(255, 255, 255, 0.075);
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9px;
   background: rgba(255, 255, 255, 0.025);
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(255, 255, 255, 0.4);
   font-size: 7px;
   font-weight: 950;
-  line-height: 1.15;
+  line-height: 1.12;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fantasyLeagueSwitcher button.active {
-  border-color: rgba(229, 184, 106, 0.46);
-  background: rgba(229, 184, 106, 0.13);
-  color: #f3cb8d;
+  border-color: rgba(229, 184, 106, 0.5);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(229, 184, 106, 0.18),
+      rgba(229, 184, 106, 0.07)
+    );
+  color: #ffe0a7;
+  box-shadow: inset 0 0 0 1px rgba(229, 184, 106, 0.06);
 }
 
 .fantasyMatchupNav {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  padding: 9px 7px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  gap: 7px;
+  margin-bottom: 9px;
 }
 
 .fantasyMatchupNav button {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 38px;
   display: grid;
   place-items: center;
   padding: 0;
-  border: 1px solid rgba(229, 184, 106, 0.24);
-  border-radius: 9px;
-  background: rgba(229, 184, 106, 0.08);
-  color: #f3cb8d;
-  font-size: 26px;
+  border: 1px solid rgba(229, 184, 106, 0.23);
+  border-radius: 10px;
+  background: rgba(229, 184, 106, 0.075);
+  color: #f5cf91;
+  font-size: 24px;
   line-height: 1;
   cursor: pointer;
+}
+
+.fantasyMatchupNav button:hover {
+  background: rgba(229, 184, 106, 0.13);
 }
 
 .fantasyMatchupNav > div {
@@ -2976,9 +3024,10 @@ input {
 .fantasyMatchupNav span {
   display: block;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(255, 255, 255, 0.35);
   font-size: 7px;
   font-weight: 900;
+  letter-spacing: 0.06em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -2986,56 +3035,86 @@ input {
 .fantasyMatchupNav strong {
   display: block;
   margin-top: 3px;
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 10px;
   font-weight: 1000;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
 .fantasyMatchupScoreboard {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr);
+  align-items: stretch;
   gap: 5px;
   margin-bottom: 10px;
-  padding: 12px 8px;
-  border: 1px solid rgba(209, 160, 79, 0.13);
-  border-radius: 11px;
+  padding: 8px;
+  border: 1px solid rgba(229, 184, 106, 0.16);
+  border-radius: 12px;
   background:
-    linear-gradient(
-      120deg,
-      rgba(209, 160, 79, 0.075),
-      rgba(255, 255, 255, 0.018)
-    );
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(229, 184, 106, 0.08),
+      transparent 54%
+    ),
+    rgba(255, 255, 255, 0.018);
 }
 
 .fantasyMatchupScoreboard > div {
   min-width: 0;
+  padding: 7px 5px;
+  border-radius: 9px;
   text-align: center;
+}
+
+.fantasyMatchupScoreboard > div.isMine {
+  background: rgba(229, 184, 106, 0.075);
+  box-shadow: inset 0 0 0 1px rgba(229, 184, 106, 0.12);
+}
+
+.fantasyMatchupScoreboard small {
+  display: block;
+  color: rgba(255, 255, 255, 0.21);
+  font-size: 5px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
 }
 
 .fantasyMatchupScoreboard span {
   display: block;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.62);
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.72);
   font-size: 8px;
-  font-weight: 900;
+  font-weight: 950;
+  line-height: 1.15;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .fantasyMatchupScoreboard strong {
   display: block;
-  margin-top: 5px;
+  margin-top: 6px;
   color: #fff;
   font-size: 25px;
   font-weight: 1000;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.fantasyMatchupScoreboard b {
+  display: block;
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.31);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
   font-variant-numeric: tabular-nums;
 }
 
 .fantasyMatchupScoreboard em {
-  color: rgba(255, 255, 255, 0.22);
-  font-size: 7px;
+  align-self: center;
+  color: rgba(255, 255, 255, 0.18);
+  font-size: 6px;
   font-style: normal;
   font-weight: 950;
   text-align: center;
@@ -3048,56 +3127,99 @@ input {
 
 .fantasyTeamColumn {
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 11px;
-  background: rgba(255, 255, 255, 0.018);
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.017);
+}
+
+.fantasyTeamColumn.isMine {
+  border-color: rgba(229, 184, 106, 0.2);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(229, 184, 106, 0.045),
+      rgba(255, 255, 255, 0.014) 86px
+    );
 }
 
 .fantasyTeamScore {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
 }
 
-.fantasyTeamScore > span {
+.fantasyTeamScore > div:first-child {
+  min-width: 0;
+}
+
+.fantasyTeamEyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 5px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+}
+
+.fantasyTeamColumn.isMine .fantasyTeamEyebrow {
+  color: #d9ad66;
+}
+
+.fantasyTeamScore > div:first-child > strong {
+  display: block;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.86);
   font-size: 10px;
   font-weight: 1000;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.fantasyTeamScore > strong {
-  color: #f1c77f;
-  font-size: 18px;
+.fantasyTeamTotals {
+  text-align: right;
+}
+
+.fantasyTeamTotals b {
+  display: block;
+  color: #fff;
+  font-size: 19px;
   font-weight: 1000;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
-.fantasyTeamScore > em {
-  grid-column: 1 / -1;
-  color: rgba(255, 255, 255, 0.28);
-  font-size: 6px;
-  font-style: normal;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-}
-
-.fantasyLineupLabel {
-  padding: 8px 9px 5px;
-  color: rgba(255, 255, 255, 0.28);
-  font-size: 6px;
-  font-weight: 950;
-  letter-spacing: 0.13em;
-}
-
-.fantasyLineupLabel.bench {
+.fantasyTeamTotals span {
+  display: block;
   margin-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 5px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.fantasyRosterHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px 42px;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 9px 5px;
+  color: rgba(255, 255, 255, 0.24);
+  font-size: 5px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+}
+
+.fantasyRosterHeader span:nth-child(2),
+.fantasyRosterHeader span:nth-child(3) {
+  text-align: right;
+}
+
+.fantasyRosterHeader.benchHeader {
+  margin-top: 5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
 }
 
 .fantasyLineup {
@@ -3106,52 +3228,75 @@ input {
 
 .fantasyLineupRow {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) 42px;
+  grid-template-columns: 29px minmax(0, 1fr) 88px;
   align-items: center;
   gap: 7px;
-  min-height: 39px;
+  min-height: 42px;
   padding: 6px 9px;
   border-top: 1px solid rgba(255, 255, 255, 0.035);
+}
+
+.fantasyLineupRow:hover {
+  background: rgba(255, 255, 255, 0.018);
 }
 
 .fantasySlot {
   color: #d9ad66;
   font-size: 7px;
   font-weight: 1000;
+  letter-spacing: 0.02em;
 }
 
-.fantasyLineupRow > div {
+.fantasyPlayerCell {
   min-width: 0;
 }
 
-.fantasyLineupRow > div strong {
+.fantasyPlayerCell strong {
   display: block;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.86);
   font-size: 8px;
   font-weight: 950;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.fantasyLineupRow > div span {
+.fantasyPlayerCell span {
   display: block;
   margin-top: 2px;
-  color: rgba(255, 255, 255, 0.26);
-  font-size: 6px;
-  font-weight: 800;
+  color: rgba(255, 255, 255, 0.24);
+  font-size: 5px;
+  font-weight: 850;
 }
 
-.fantasyLineupRow > b {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 10px;
-  font-weight: 1000;
+.fantasyPlayerNumbers {
+  display: grid;
+  grid-template-columns: 40px 42px;
+  align-items: baseline;
+  gap: 6px;
   text-align: right;
+}
+
+.fantasyPlayerNumbers span {
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 7px;
+  font-weight: 850;
   font-variant-numeric: tabular-nums;
 }
 
-.fantasyBench .fantasyLineupRow {
-  opacity: 0.68;
+.fantasyPlayerNumbers b {
+  color: rgba(255, 255, 255, 0.93);
+  font-size: 11px;
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+}
+
+.fantasyLineupRow.benchRow {
+  opacity: 0.63;
+}
+
+.fantasyLineupRow.benchRow .fantasySlot {
+  color: rgba(255, 255, 255, 0.26);
 }
 
 .fantasyConnectCard {
@@ -3182,4 +3327,93 @@ input {
 
 .fantasyConnectCard small {
   color: rgba(255, 255, 255, 0.25);
+}
+
+
+/* Fantasy matchup score polish */
+.fantasyMatchupNames {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.fantasyMatchupNames strong {
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 8px;
+  font-weight: 950;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasyMatchupNames span {
+  display: block;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 6px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.fantasyMatchupScoreboard > div.isLeading > strong {
+  color: #56e38a;
+  text-shadow: 0 0 14px rgba(86, 227, 138, 0.2);
+}
+
+.fantasyProjection,
+.fantasyWinChance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.fantasyProjection b,
+.fantasyWinChance b {
+  display: inline;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.24);
+  font-size: 5px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.fantasyProjection span,
+.fantasyWinChance span {
+  display: inline;
+  margin: 0;
+  overflow: visible;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 7px;
+  font-weight: 1000;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.fantasyWinChance {
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+}
+
+.fantasyWinChance span {
+  color: #f5cf91;
+}
+
+.fantasyTeamScore.compact {
+  min-height: 24px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.fantasyTeamScore.compact .fantasyTeamEyebrow {
+  color: rgba(255, 255, 255, 0.42);
 }
