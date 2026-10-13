@@ -4361,6 +4361,172 @@ function LeagueSection({
   )
 }
 
+
+const MLB_AL_TEAMS = new Set([
+  'BAL','BOS','NYY','TB','TOR',
+  'CWS','CLE','DET','KC','MIN',
+  'HOU','LAA','ATH','SEA','TEX',
+])
+
+function mlbSeriesLeague(series: PlayoffSeries) {
+  const codes = series.teams.map((team) => team.code)
+  const alCount = codes.filter((code) => MLB_AL_TEAMS.has(code)).length
+  return alCount >= 2 ? 'AL' : 'NL'
+}
+
+function mlbRoundKey(label: string) {
+  const text = label.toLowerCase()
+  if (text.includes('wild card')) return 'WC'
+  if (text.includes('division')) return 'DS'
+  if (text.includes('championship') || text.includes('alcs') || text.includes('nlcs')) return 'CS'
+  if (text.includes('world series') || text.includes('final')) return 'WS'
+  return 'OTHER'
+}
+
+function SeriesBracketCard({ series }: { series: PlayoffSeries }) {
+  const targetWins = Math.floor(series.bestOf / 2) + 1
+  const winnerId = series.teams.find(
+    (team) => (series.wins[team.id] || 0) >= targetWins,
+  )?.id
+
+  return (
+    <div className="mlbBracketSeriesCard">
+      <div className="mlbBracketSeriesMeta">
+        <span>BEST OF {series.bestOf}</span>
+        <span>{series.summary}</span>
+      </div>
+      {series.teams.map((team) => {
+        const wins = series.wins[team.id] || 0
+        const isWinner = winnerId === team.id
+        const isLeader = !winnerId && wins === Math.max(...series.teams.map((t) => series.wins[t.id] || 0)) && wins !== (series.wins[series.teams.find((t) => t.id !== team.id)?.id || ''] || 0)
+        return (
+          <div
+            key={team.id}
+            className={`mlbBracketTeamRow ${isWinner || isLeader ? 'leading' : ''}`}
+          >
+            <TeamLogo team={team} />
+            <div className="mlbBracketTeamText">
+              <strong>{team.code}</strong>
+              <span>{team.record || team.displayName}</span>
+            </div>
+            <strong className="mlbBracketWins">{wins}</strong>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function MLBBracketPage({
+  games,
+  loading,
+}: {
+  games: Game[]
+  loading: boolean
+}) {
+  const series = useMemo(
+    () => buildPlayoffSeries('MLB', games),
+    [games],
+  )
+
+  const groups = useMemo(() => {
+    const result = {
+      AL: { WC: [] as PlayoffSeries[], DS: [] as PlayoffSeries[], CS: [] as PlayoffSeries[] },
+      NL: { WC: [] as PlayoffSeries[], DS: [] as PlayoffSeries[], CS: [] as PlayoffSeries[] },
+      WS: [] as PlayoffSeries[],
+    }
+
+    for (const item of series) {
+      const round = mlbRoundKey(item.roundLabel)
+      if (round === 'WS') {
+        result.WS.push(item)
+        continue
+      }
+      if (!['WC','DS','CS'].includes(round)) continue
+      result[mlbSeriesLeague(item)][round as 'WC'|'DS'|'CS'].push(item)
+    }
+    return result
+  }, [series])
+
+  if (loading) {
+    return (
+      <main className="mlbBracketPage">
+        <div className="mlbBracketLoading">BUILDING MLB POSTSEASON BRACKET…</div>
+      </main>
+    )
+  }
+
+  return (
+    <main className="mlbBracketPage">
+      <header className="mlbBracketHeader">
+        <div>
+          <span>MLB POSTSEASON</span>
+          <h1>2026 PLAYOFF BRACKET</h1>
+        </div>
+        <button type="button" onClick={() => window.close()}>CLOSE</button>
+      </header>
+
+      {series.length === 0 ? (
+        <div className="mlbBracketEmpty">No MLB postseason series are available yet.</div>
+      ) : (
+        <div className="mlbBracketCanvas">
+          <div className="mlbBracketLeagueLabel al">AMERICAN LEAGUE</div>
+          <div className="mlbBracketLeagueLabel nl">NATIONAL LEAGUE</div>
+
+          <section className="mlbBracketColumn al wc">
+            <div className="mlbBracketRoundTitle">WILD CARD<span>BEST OF 3</span></div>
+            <div className="mlbBracketStack wcStack">
+              {groups.AL.WC.map((item) => <SeriesBracketCard key={item.key} series={item} />)}
+            </div>
+          </section>
+
+          <section className="mlbBracketColumn al ds">
+            <div className="mlbBracketRoundTitle">DIVISION SERIES<span>BEST OF 5</span></div>
+            <div className="mlbBracketStack dsStack">
+              {groups.AL.DS.map((item) => <SeriesBracketCard key={item.key} series={item} />)}
+            </div>
+          </section>
+
+          <section className="mlbBracketColumn al cs">
+            <div className="mlbBracketRoundTitle">ALCS<span>BEST OF 7</span></div>
+            <div className="mlbBracketStack csStack">
+              {groups.AL.CS.map((item) => <SeriesBracketCard key={item.key} series={item} />)}
+            </div>
+          </section>
+
+          <section className="mlbBracketColumn ws">
+            <div className="mlbBracketRoundTitle world">WORLD SERIES<span>BEST OF 7</span></div>
+            <div className="mlbBracketStack worldStack">
+              {groups.WS.map((item) => <SeriesBracketCard key={item.key} series={item} />)}
+            </div>
+          </section>
+
+          <section className="mlbBracketColumn nl cs">
+            <div className="mlbBracketRoundTitle">NLCS<span>BEST OF 7</span></div>
+            <div className="mlbBracketStack csStack">
+              {groups.NL.CS.map((item) => <SeriesBracketCard key={item.key} series={item} />)}
+            </div>
+          </section>
+
+          <section className="mlbBracketColumn nl ds">
+            <div className="mlbBracketRoundTitle">DIVISION SERIES<span>BEST OF 5</span></div>
+            <div className="mlbBracketStack dsStack">
+              {groups.NL.DS.map((item) => <SeriesBracketCard key={item.key} series={item} />)}
+            </div>
+          </section>
+
+          <section className="mlbBracketColumn nl wc">
+            <div className="mlbBracketRoundTitle">WILD CARD<span>BEST OF 3</span></div>
+            <div className="mlbBracketStack wcStack">
+              {groups.NL.WC.map((item) => <SeriesBracketCard key={item.key} series={item} />)}
+            </div>
+          </section>
+        </div>
+      )}
+    </main>
+  )
+}
+
 function PlayoffsHub({
   gamesByLeague,
   loading,
@@ -4985,6 +5151,9 @@ function App() {
     params.get('popup') ===
     '1'
 
+  const bracketMode =
+    params.get('bracket') === 'mlb'
+
   const popupData =
     params.get('data')
 
@@ -5265,7 +5434,7 @@ function App() {
   useEffect(() => {
     if (
       popupMode ||
-      view !== 'PLAYOFFS'
+      (!bracketMode && view !== 'PLAYOFFS')
     ) {
       return
     }
@@ -5363,7 +5532,7 @@ function App() {
       active = false
       window.clearInterval(timer)
     }
-  }, [view, popupMode])
+  }, [view, popupMode, bracketMode])
 
   useEffect(() => {
     if (popupMode) return
@@ -6206,6 +6375,15 @@ function App() {
     selectedDate.toDateString() ===
     new Date().toDateString()
 
+  if (bracketMode) {
+    return (
+      <MLBBracketPage
+        games={playoffGamesByLeague.MLB}
+        loading={playoffLoading}
+      />
+    )
+  }
+
   if (popupMode) {
     return (
       <main className="popupScreen">
@@ -6452,8 +6630,8 @@ function App() {
                 : ''
             }`}
             onClick={() => {
-              setSelectedPlayoffLeague(null)
-              changeView('PLAYOFFS')
+              const bracketUrl = `${window.location.origin}${window.location.pathname}?bracket=mlb`
+              window.open(bracketUrl, '_blank', 'noopener,noreferrer')
             }}
             aria-label="Playoff brackets"
             title="Playoff brackets"
