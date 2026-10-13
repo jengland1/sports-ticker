@@ -189,6 +189,9 @@ const FANTASY_LEAGUES: FantasyLeagueConfig[] = [
 const FANTASY_PROXY =
   'https://sports-ticker-mocha.vercel.app/api/fantasy'
 
+const NHL_PROXY =
+  'https://sports-ticker-mocha.vercel.app/api/nhl'
+
 const LEAGUES: Record<
   LeagueKey,
   { sport: string; slug: string }
@@ -2440,6 +2443,243 @@ function gameDateLong(
   )
 }
 
+
+function openStandaloneWindow(
+  url: string,
+  options: {
+    width?: number
+    height?: number
+    left?: number
+    top?: number
+    name?: string
+  } = {},
+) {
+  const width = options.width ?? 900
+  const height = options.height ?? Math.max(720, window.outerHeight - 40)
+  const left = options.left ?? Math.max(0, window.screenX + 24)
+  const top = options.top ?? Math.max(0, window.screenY + 18)
+  const name = options.name || `sports-window-${Date.now()}`
+
+  const popup = window.open(
+    url,
+    name,
+    [
+      'popup=yes',
+      `width=${width}`,
+      `height=${height}`,
+      `left=${left}`,
+      `top=${top}`,
+      'resizable=yes',
+      'scrollbars=yes',
+      'toolbar=no',
+      'menubar=no',
+      'location=yes',
+      'status=no',
+    ].join(','),
+  )
+
+  if (popup) {
+    try {
+      popup.moveTo(left, top)
+      popup.resizeTo(width, height)
+    } catch {
+      // The browser may ignore explicit window placement.
+    }
+    popup.focus()
+  }
+
+  return popup
+}
+
+function detailPlayerTables(summary: any) {
+  const groups = Array.isArray(summary?.boxscore?.players)
+    ? summary.boxscore.players
+    : []
+
+  return groups.map((group: any) => ({
+    team: group?.team?.abbreviation || group?.team?.shortDisplayName || 'TEAM',
+    sections: (Array.isArray(group?.statistics) ? group.statistics : []).map((section: any) => ({
+      title: section?.name || section?.displayName || 'PLAYERS',
+      labels: Array.isArray(section?.labels) ? section.labels : [],
+      athletes: (Array.isArray(section?.athletes) ? section.athletes : [])
+        .filter((row: any) => row?.athlete)
+        .map((row: any) => ({
+          name: row.athlete?.shortName || row.athlete?.displayName || 'Player',
+          headshot: row.athlete?.headshot?.href || row.athlete?.headshot,
+          position: row.athlete?.position?.abbreviation || '',
+          starter: Boolean(row?.starter),
+          stats: Array.isArray(row?.stats) ? row.stats : [],
+        })),
+    })).filter((section: any) => section.athletes.length),
+  })).filter((group: any) => group.sections.length)
+}
+
+function detailPlays(summary: any) {
+  const plays = Array.isArray(summary?.plays) ? summary.plays : []
+  return [...plays]
+    .reverse()
+    .slice(0, 28)
+    .map((play: any) => ({
+      id: String(play?.id || `${play?.period?.number || ''}-${play?.clock?.displayValue || ''}-${play?.text || ''}`),
+      text: play?.text || play?.shortText || play?.type?.text || 'Game event',
+      clock: play?.clock?.displayValue || '',
+      period: play?.period?.displayValue || (play?.period?.number ? `P${play.period.number}` : ''),
+      scoring: Boolean(play?.scoringPlay),
+      teamLogo: play?.team?.logo,
+    }))
+}
+
+function detailInjuries(summary: any) {
+  const injuries = Array.isArray(summary?.injuries) ? summary.injuries : []
+  return injuries.flatMap((team: any) =>
+    (Array.isArray(team?.injuries) ? team.injuries : []).map((item: any) => ({
+      team: team?.team?.abbreviation || '',
+      player: item?.athlete?.displayName || item?.athlete?.shortName || 'Player',
+      status: item?.status || item?.type?.description || item?.details?.type || 'Injury',
+      detail: item?.details?.detail || item?.details?.location || '',
+    })),
+  )
+}
+
+function detailOfficials(summary: any) {
+  const officials = summary?.gameInfo?.officials || summary?.officials || []
+  return (Array.isArray(officials) ? officials : []).map((item: any) => ({
+    name: item?.fullName || item?.displayName || item?.official?.displayName || 'Official',
+    role: item?.position?.displayName || item?.position?.name || item?.type || '',
+  }))
+}
+
+function currentNHLSeasonId() {
+  const now = new Date()
+  const startYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1
+  return `${startYear}${startYear + 1}`
+}
+
+type NHLLeaderRow = {
+  playerId: number
+  skaterFullName: string
+  teamAbbrevs: string
+  positionCode?: string
+  gamesPlayed?: number
+  goals?: number
+  assists?: number
+  points?: number
+  plusMinus?: number
+  penaltyMinutes?: number
+  pointsPerGame?: number
+  evGoals?: number
+  evPoints?: number
+  ppGoals?: number
+  ppPoints?: number
+  shGoals?: number
+  shPoints?: number
+  otGoals?: number
+  gameWinningGoals?: number
+  shots?: number
+  shootingPct?: number
+  timeOnIcePerGame?: number
+  faceoffWinPct?: number
+}
+
+function formatNHLTime(seconds?: number) {
+  if (seconds === undefined || seconds === null || !Number.isFinite(Number(seconds))) return '—'
+  const total = Math.round(Number(seconds))
+  const minutes = Math.floor(total / 60)
+  const secs = String(total % 60).padStart(2, '0')
+  return `${minutes}:${secs}`
+}
+
+function NHLPointsLeaders() {
+  const [rows, setRows] = useState<NHLLeaderRow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    setError('')
+
+    fetch(`${NHL_PROXY}?season=${currentNHLSeasonId()}&limit=25`)
+      .then(async (response) => {
+        const data = await response.json()
+        if (!response.ok) throw new Error(data?.error || 'NHL leaders unavailable')
+        return data
+      })
+      .then((data) => {
+        if (!active) return
+        setRows(Array.isArray(data?.data) ? data.data : [])
+        setLoading(false)
+      })
+      .catch((reason) => {
+        if (!active) return
+        setError(reason instanceof Error ? reason.message : 'NHL leaders unavailable')
+        setLoading(false)
+      })
+
+    return () => { active = false }
+  }, [])
+
+  return (
+    <section className="nhlLeadersSection">
+      <div className="nhlLeadersHeader">
+        <div>
+          <span>NHL · 2026-27</span>
+          <strong>POINTS LEADERS</strong>
+        </div>
+        <em>TOP 25</em>
+      </div>
+
+      {loading ? (
+        <div className="nhlLeadersState">LOADING LEAGUE LEADERS…</div>
+      ) : error ? (
+        <div className="nhlLeadersState">{error}</div>
+      ) : (
+        <div className="nhlLeadersList">
+          {rows.map((row, index) => (
+            <article className="nhlLeaderCard" key={row.playerId || `${row.skaterFullName}-${index}`}>
+              <div className="nhlLeaderRank">{index + 1}</div>
+              <div className="nhlLeaderIdentity">
+                <img
+                  src={`https://assets.nhle.com/mugs/nhl/20262027/${row.teamAbbrevs || 'NHL'}/${row.playerId}.png`}
+                  alt=""
+                  onError={(event) => { event.currentTarget.style.display = 'none' }}
+                />
+                <div>
+                  <strong>{row.skaterFullName}</strong>
+                  <span>{row.teamAbbrevs || '—'} · {row.positionCode || '—'}</span>
+                </div>
+              </div>
+              <div className="nhlLeaderPrimary">
+                <span><b>{row.points ?? '—'}</b>P</span>
+                <span>{row.goals ?? '—'}G</span>
+                <span>{row.assists ?? '—'}A</span>
+              </div>
+              <div className="nhlLeaderStats">
+                <span>GP <b>{row.gamesPlayed ?? '—'}</b></span>
+                <span>+/- <b>{row.plusMinus ?? '—'}</b></span>
+                <span>PIM <b>{row.penaltyMinutes ?? '—'}</b></span>
+                <span>P/GP <b>{row.pointsPerGame !== undefined ? Number(row.pointsPerGame).toFixed(2) : '—'}</b></span>
+                <span>EVG <b>{row.evGoals ?? '—'}</b></span>
+                <span>EVP <b>{row.evPoints ?? '—'}</b></span>
+                <span>PPG <b>{row.ppGoals ?? '—'}</b></span>
+                <span>PPP <b>{row.ppPoints ?? '—'}</b></span>
+                <span>SHG <b>{row.shGoals ?? '—'}</b></span>
+                <span>SHP <b>{row.shPoints ?? '—'}</b></span>
+                <span>OTG <b>{row.otGoals ?? '—'}</b></span>
+                <span>GWG <b>{row.gameWinningGoals ?? '—'}</b></span>
+                <span>S <b>{row.shots ?? '—'}</b></span>
+                <span>S% <b>{row.shootingPct !== undefined ? Number(row.shootingPct).toFixed(1) : '—'}</b></span>
+                <span>TOI/GP <b>{formatNHLTime(row.timeOnIcePerGame)}</b></span>
+                <span>FOW% <b>{row.faceoffWinPct !== undefined ? Number(row.faceoffWinPct).toFixed(1) : '—'}</b></span>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
 const GAME_DETAIL_STYLES = `
   .gameDrawer.popupDrawer {
     width: 100%;
@@ -2640,12 +2880,12 @@ function GameDetail({
 }) {
   function openEspn() {
     if (!game.link) return
-
-    window.open(
-      game.link,
-      '_blank',
-      'noopener,noreferrer',
-    )
+    openStandaloneWindow(game.link, {
+      width: 1240,
+      height: Math.max(780, window.outerHeight - 30),
+      left: Math.max(20, window.screenX + 40),
+      top: Math.max(10, window.screenY + 10),
+    })
   }
 
   const stats =
@@ -2656,6 +2896,11 @@ function GameDetail({
 
   const summary =
     game.summaryData
+
+  const playerTables = detailPlayerTables(summary)
+  const recentPlays = detailPlays(summary)
+  const injuries = detailInjuries(summary)
+  const officials = detailOfficials(summary)
 
   const competition =
     summary?.header
@@ -3057,6 +3302,93 @@ function GameDetail({
           </div>
         )}
       </section>
+
+      {playerTables.length > 0 && (
+        <section className="gd-section gd-boxscore-section">
+          <div className="gd-section-head">
+            <div className="gd-section-title">FULL BOX SCORE</div>
+            <div className="gd-section-note">PLAYER-BY-PLAYER</div>
+          </div>
+          {playerTables.map((teamGroup: any) => (
+            <div className="gd-player-team" key={teamGroup.team}>
+              <div className="gd-player-team-title">{teamGroup.team}</div>
+              {teamGroup.sections.map((section: any) => (
+                <div className="gd-player-section" key={`${teamGroup.team}-${section.title}`}>
+                  <div className="gd-player-section-title">{section.title}</div>
+                  <div className="gd-player-scroll">
+                    <table className="gd-player-table">
+                      <thead>
+                        <tr>
+                          <th>PLAYER</th>
+                          {section.labels.map((label: string) => <th key={label}>{label}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {section.athletes.map((athlete: any) => (
+                          <tr key={`${teamGroup.team}-${section.title}-${athlete.name}`}>
+                            <td>
+                              <div className="gd-player-name-cell">
+                                {athlete.headshot ? <img src={athlete.headshot} alt="" /> : null}
+                                <div><strong>{athlete.name}</strong><span>{athlete.position}{athlete.starter ? ' · STARTER' : ''}</span></div>
+                              </div>
+                            </td>
+                            {section.labels.map((_: string, statIndex: number) => (
+                              <td key={statIndex}>{athlete.stats[statIndex] ?? '—'}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </section>
+      )}
+
+      {recentPlays.length > 0 && (
+        <section className="gd-section">
+          <div className="gd-section-head">
+            <div className="gd-section-title">PLAY-BY-PLAY</div>
+            <div className="gd-section-note">LATEST {recentPlays.length}</div>
+          </div>
+          <div className="gd-play-list">
+            {recentPlays.map((play) => (
+              <div className={`gd-play ${play.scoring ? 'scoring' : ''}`} key={play.id}>
+                <div className="gd-play-time"><strong>{play.period}</strong><span>{play.clock}</span></div>
+                {play.teamLogo ? <img src={play.teamLogo} alt="" /> : <span className="gd-play-dot" />}
+                <div className="gd-play-text">{play.text}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {(injuries.length > 0 || officials.length > 0) && (
+        <section className="gd-section gd-info-grid">
+          {injuries.length > 0 && (
+            <div>
+              <div className="gd-section-title">INJURIES</div>
+              <div className="gd-info-list">
+                {injuries.map((item, index) => (
+                  <div key={`${item.player}-${index}`}><strong>{item.team} · {item.player}</strong><span>{item.status}{item.detail ? ` · ${item.detail}` : ''}</span></div>
+                ))}
+              </div>
+            </div>
+          )}
+          {officials.length > 0 && (
+            <div>
+              <div className="gd-section-title">OFFICIALS</div>
+              <div className="gd-info-list">
+                {officials.map((item, index) => (
+                  <div key={`${item.name}-${index}`}><strong>{item.name}</strong><span>{item.role}</span></div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       <ProbabilityGraph
         game={game}
@@ -6300,63 +6632,20 @@ function App() {
   function openGamePopup(
     game: Game,
   ) {
-    const popupWidth =
-      500
+    const popupWidth = 760
+    const popupHeight = Math.max(760, window.outerHeight - 24)
+    const left = Math.max(0, window.screenX - popupWidth - 12)
+    const top = Math.max(0, window.screenY + 8)
 
-    const popupHeight =
-      Math.max(
-        700,
-        window.outerHeight,
-      )
+    const serializedGame = encodeURIComponent(JSON.stringify(game))
+    const url = `${window.location.origin}${window.location.pathname}?popup=1&data=${serializedGame}`
 
-    const left =
-      window.screenX -
-      popupWidth -
-      12
-
-    const top =
-      window.screenY
-
-    const serializedGame =
-      encodeURIComponent(
-        JSON.stringify(game),
-      )
-
-    const url =
-      `${window.location.origin}${window.location.pathname}` +
-      `?popup=1&data=${serializedGame}`
-
-    const popup =
-      window.open(
-        url,
-        '_blank',
-        [
-          'popup=yes',
-          `width=${popupWidth}`,
-          `height=${popupHeight}`,
-          `left=${left}`,
-          `top=${top}`,
-          'resizable=yes',
-          'scrollbars=yes',
-        ].join(','),
-      )
-
-    if (popup) {
-      try {
-        popup.moveTo(
-          left,
-          top,
-        )
-        popup.resizeTo(
-          popupWidth,
-          popupHeight,
-        )
-      } catch {
-        // Browser may ignore explicit positioning.
-      }
-
-      popup.focus()
-    }
+    openStandaloneWindow(url, {
+      width: popupWidth,
+      height: popupHeight,
+      left,
+      top,
+    })
 
     pauseAutoScroll()
   }
@@ -6729,7 +7018,12 @@ function App() {
             }`}
             onClick={() => {
               const bracketUrl = `${window.location.origin}${window.location.pathname}?bracket=mlb`
-              window.open(bracketUrl, '_blank', 'noopener,noreferrer')
+              openStandaloneWindow(bracketUrl, {
+                width: 1500,
+                height: Math.max(820, window.outerHeight - 30),
+                left: Math.max(10, window.screenX + 20),
+                top: Math.max(10, window.screenY + 10),
+              })
             }}
             aria-label="Playoff brackets"
             title="Playoff brackets"
@@ -6899,15 +7193,18 @@ function App() {
           )}
 
           {view === 'NHL' && (
-            <LeagueSection
-              league="NHL"
-              games={
-                sortedGames.NHL
-              }
-              onSelect={
-                openGamePopup
-              }
-            />
+            <>
+              <LeagueSection
+                league="NHL"
+                games={
+                  sortedGames.NHL
+                }
+                onSelect={
+                  openGamePopup
+                }
+              />
+              <NHLPointsLeaders />
+            </>
           )}
 
           {view === 'NFL' && (
