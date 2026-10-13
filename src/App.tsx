@@ -4374,13 +4374,63 @@ function mlbSeriesLeague(series: PlayoffSeries) {
   return alCount >= 2 ? 'AL' : 'NL'
 }
 
-function mlbRoundKey(label: string) {
-  const text = label.toLowerCase()
+function mlbRoundKey(series: PlayoffSeries) {
+  const text = series.roundLabel.toLowerCase()
+
   if (text.includes('wild card')) return 'WC'
   if (text.includes('division')) return 'DS'
-  if (text.includes('championship') || text.includes('alcs') || text.includes('nlcs')) return 'CS'
-  if (text.includes('world series') || text.includes('final')) return 'WS'
+  if (
+    text.includes('championship') ||
+    text.includes('alcs') ||
+    text.includes('nlcs')
+  ) {
+    return 'CS'
+  }
+  if (
+    text.includes('world series') ||
+    text.includes('final')
+  ) {
+    return 'WS'
+  }
+
+  // ESPN often omits the round name on individual MLB scoreboard
+  // events. Infer the round from the series' first game date so the
+  // bracket still fills correctly.
+  const firstGame = [...series.games].sort(
+    (a, b) =>
+      new Date(a.date).getTime() -
+      new Date(b.date).getTime(),
+  )[0]
+
+  if (!firstGame) return 'OTHER'
+
+  const date = new Date(firstGame.date)
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+
+  // 2026 MLB postseason: Wild Card Sep 29-Oct 1, DS Oct 3-10,
+  // LCS Oct 11-20, World Series Oct 23-31.
+  if (month === 9 || (month === 10 && day <= 1)) {
+    return 'WC'
+  }
+  if (month === 10 && day >= 3 && day <= 10) {
+    return 'DS'
+  }
+  if (month === 10 && day >= 11 && day <= 20) {
+    return 'CS'
+  }
+  if (month === 10 && day >= 23) {
+    return 'WS'
+  }
+
   return 'OTHER'
+}
+
+function mlbSeriesHasRealTeams(series: PlayoffSeries) {
+  return series.teams.every((team) => {
+    const code = String(team.code || '').toUpperCase()
+    return code && code !== 'TBD' && code !== 'TBA'
+  })
 }
 
 function SeriesBracketCard({ series }: { series: PlayoffSeries }) {
@@ -4437,14 +4487,39 @@ function MLBBracketPage({
     }
 
     for (const item of series) {
-      const round = mlbRoundKey(item.roundLabel)
+      const round = mlbRoundKey(item)
+
       if (round === 'WS') {
-        result.WS.push(item)
+        if (mlbSeriesHasRealTeams(item)) {
+          result.WS.push(item)
+        }
         continue
       }
-      if (!['WC','DS','CS'].includes(round)) continue
-      result[mlbSeriesLeague(item)][round as 'WC'|'DS'|'CS'].push(item)
+
+      if (!['WC', 'DS', 'CS'].includes(round)) {
+        continue
+      }
+
+      if (!mlbSeriesHasRealTeams(item)) {
+        continue
+      }
+
+      result[mlbSeriesLeague(item)][
+        round as 'WC' | 'DS' | 'CS'
+      ].push(item)
     }
+
+    const byStart = (a: PlayoffSeries, b: PlayoffSeries) =>
+      new Date(a.games[0]?.date || 0).getTime() -
+      new Date(b.games[0]?.date || 0).getTime()
+
+    result.AL.WC.sort(byStart)
+    result.AL.DS.sort(byStart)
+    result.AL.CS.sort(byStart)
+    result.NL.WC.sort(byStart)
+    result.NL.DS.sort(byStart)
+    result.NL.CS.sort(byStart)
+    result.WS.sort(byStart)
     return result
   }, [series])
 
@@ -4497,7 +4572,30 @@ function MLBBracketPage({
           <section className="mlbBracketColumn ws">
             <div className="mlbBracketRoundTitle world">WORLD SERIES<span>BEST OF 7</span></div>
             <div className="mlbBracketStack worldStack">
-              {groups.WS.map((item) => <SeriesBracketCard key={item.key} series={item} />)}
+              {groups.WS.length ? (
+                groups.WS.map((item) => (
+                  <SeriesBracketCard key={item.key} series={item} />
+                ))
+              ) : (
+                <div className="mlbBracketSeriesCard mlbBracketPlaceholder">
+                  <div className="mlbBracketSeriesMeta">
+                    <span>BEST OF 7</span>
+                    <span>BEGINS OCT 23</span>
+                  </div>
+                  <div className="mlbBracketTeamRow">
+                    <div className="mlbBracketTeamText">
+                      <strong>ALCS WINNER</strong>
+                      <span>American League champion</span>
+                    </div>
+                  </div>
+                  <div className="mlbBracketTeamRow">
+                    <div className="mlbBracketTeamText">
+                      <strong>NLCS WINNER</strong>
+                      <span>National League champion</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 
