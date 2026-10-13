@@ -2529,7 +2529,12 @@ function detailPlays(summary: any) {
     }))
 }
 
-function detailInjuries(summary: any) {
+function detailInjuries(summary: any): {
+  team: string
+  player: string
+  status: string
+  detail: string
+}[] {
   const injuries = Array.isArray(summary?.injuries) ? summary.injuries : []
   return injuries.flatMap((team: any) =>
     (Array.isArray(team?.injuries) ? team.injuries : []).map((item: any) => ({
@@ -2541,7 +2546,10 @@ function detailInjuries(summary: any) {
   )
 }
 
-function detailOfficials(summary: any) {
+function detailOfficials(summary: any): {
+  name: string
+  role: string
+}[] {
   const officials = summary?.gameInfo?.officials || summary?.officials || []
   return (Array.isArray(officials) ? officials : []).map((item: any) => ({
     name: item?.fullName || item?.displayName || item?.official?.displayName || 'Official',
