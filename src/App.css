@@ -4379,3 +4379,103 @@ input {
   .mlbBracketHeader { min-width: 1050px; }
   .mlbBracketCanvas { width: 1050px; min-height: 650px; }
 }
+
+/* === NHL league leaders === */
+.nhlLeadersSection {
+  margin: 14px 10px 24px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(13,28,39,.96), rgba(7,14,20,.98));
+}
+
+.nhlLeadersHeader {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  padding:14px 14px 12px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.nhlLeadersHeader div { display:flex; flex-direction:column; gap:3px; }
+.nhlLeadersHeader span,
+.nhlLeadersHeader em { font-size:8px; font-style:normal; font-weight:900; letter-spacing:.14em; color:rgba(255,255,255,.38); }
+.nhlLeadersHeader strong { font-size:15px; font-weight:1000; letter-spacing:.02em; }
+.nhlLeadersState { padding:20px 14px; text-align:center; font-size:9px; font-weight:900; letter-spacing:.1em; color:rgba(255,255,255,.36); }
+.nhlLeadersList { display:flex; flex-direction:column; }
+.nhlLeaderCard { display:grid; grid-template-columns:22px minmax(0,1fr) auto; gap:9px; padding:11px 12px; border-bottom:1px solid rgba(255,255,255,.055); align-items:center; }
+.nhlLeaderCard:last-child { border-bottom:0; }
+.nhlLeaderRank { font-size:13px; font-weight:1000; color:rgba(255,255,255,.32); text-align:center; }
+.nhlLeaderIdentity { min-width:0; display:flex; align-items:center; gap:8px; }
+.nhlLeaderIdentity img { width:36px; height:36px; border-radius:50%; object-fit:cover; background:rgba(255,255,255,.04); }
+.nhlLeaderIdentity div { min-width:0; display:flex; flex-direction:column; gap:2px; }
+.nhlLeaderIdentity strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; font-weight:950; }
+.nhlLeaderIdentity span { font-size:8px; font-weight:850; color:rgba(255,255,255,.38); }
+.nhlLeaderPrimary { display:flex; align-items:baseline; gap:5px; white-space:nowrap; }
+.nhlLeaderPrimary span { font-size:8px; color:rgba(255,255,255,.56); font-weight:900; }
+.nhlLeaderPrimary span:first-child { color:#fff; font-size:10px; }
+.nhlLeaderPrimary b { font-size:15px; margin-right:1px; }
+.nhlLeaderStats { grid-column:2 / 4; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px 7px; padding-top:7px; margin-top:1px; border-top:1px solid rgba(255,255,255,.04); }
+.nhlLeaderStats span { display:flex; justify-content:space-between; gap:4px; font-size:7px; font-weight:800; color:rgba(255,255,255,.3); }
+.nhlLeaderStats b { color:rgba(255,255,255,.72); font-weight:950; }
+
+.fantasyEspnButton { width:100%; cursor:pointer; }
+
+/* === Rich Game Center === */
+.popupScreen { width:100%; max-width:none; }
+.popupDrawer { width:100%; max-width:760px; margin:0 auto; }
+.popupDrawer .gd-hero { min-height:220px; }
+.popupDrawer .gd-team .teamLogo.large { width:82px; height:82px; }
+.popupDrawer .gd-team-code { font-size:32px; }
+.popupDrawer .gd-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.popupDrawer .gd-section { padding:16px; }
+.popupDrawer .gd-section-title { font-size:10px; }
+.popupDrawer .gd-section-note { font-size:7px; }
+.popupDrawer .gd-comparison-row { grid-template-columns:58px 1fr 96px 1fr 58px; gap:10px; }
+.popupDrawer .gd-stat-value { font-size:11px; }
+.popupDrawer .gd-stat-label { font-size:8px; }
+.popupDrawer .gd-leaders { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.popupDrawer .gd-headshot { width:38px; height:38px; }
+.popupDrawer .gd-leader-name { font-size:10px; }
+.popupDrawer .gd-leader-label { font-size:7px; }
+.popupDrawer .gd-leader-value { font-size:18px; }
+
+.gd-player-team { margin-top:14px; }
+.gd-player-team-title { font-size:13px; font-weight:1000; letter-spacing:.08em; margin-bottom:8px; }
+.gd-player-section + .gd-player-section { margin-top:16px; }
+.gd-player-section-title { margin-bottom:6px; font-size:8px; font-weight:950; letter-spacing:.12em; color:rgba(255,255,255,.42); }
+.gd-player-scroll { overflow-x:auto; border:1px solid rgba(255,255,255,.055); border-radius:10px; }
+.gd-player-table { width:100%; min-width:620px; border-collapse:collapse; font-size:8px; }
+.gd-player-table th { position:sticky; top:0; padding:8px 7px; background:#0e151c; color:rgba(255,255,255,.38); font-size:7px; letter-spacing:.08em; text-align:center; white-space:nowrap; }
+.gd-player-table th:first-child { text-align:left; min-width:160px; }
+.gd-player-table td { padding:8px 7px; border-top:1px solid rgba(255,255,255,.045); text-align:center; white-space:nowrap; color:rgba(255,255,255,.78); }
+.gd-player-table td:first-child { text-align:left; }
+.gd-player-name-cell { display:flex; align-items:center; gap:8px; }
+.gd-player-name-cell img { width:28px; height:28px; border-radius:50%; object-fit:cover; background:rgba(255,255,255,.05); }
+.gd-player-name-cell div { display:flex; flex-direction:column; gap:2px; }
+.gd-player-name-cell strong { font-size:9px; }
+.gd-player-name-cell span { font-size:6px; color:rgba(255,255,255,.32); }
+
+.gd-play-list { display:flex; flex-direction:column; }
+.gd-play { display:grid; grid-template-columns:54px 22px minmax(0,1fr); gap:8px; align-items:center; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.045); }
+.gd-play:last-child { border-bottom:0; }
+.gd-play.scoring { background:linear-gradient(90deg, rgba(255,210,90,.07), transparent); }
+.gd-play-time { display:flex; flex-direction:column; gap:2px; }
+.gd-play-time strong { font-size:8px; }
+.gd-play-time span { font-size:7px; color:rgba(255,255,255,.36); }
+.gd-play img { width:20px; height:20px; object-fit:contain; }
+.gd-play-dot { width:6px; height:6px; margin-left:7px; border-radius:50%; background:rgba(255,255,255,.18); }
+.gd-play-text { font-size:9px; line-height:1.4; color:rgba(255,255,255,.78); }
+
+.gd-info-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.gd-info-list { margin-top:9px; display:flex; flex-direction:column; gap:7px; }
+.gd-info-list div { display:flex; flex-direction:column; gap:2px; padding:7px 8px; border:1px solid rgba(255,255,255,.05); border-radius:8px; background:rgba(255,255,255,.02); }
+.gd-info-list strong { font-size:8px; }
+.gd-info-list span { font-size:7px; color:rgba(255,255,255,.35); }
+
+@media (max-width:620px) {
+  .nhlLeaderStats { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .popupDrawer .gd-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .popupDrawer .gd-leaders { grid-template-columns:1fr; }
+  .gd-info-grid { grid-template-columns:1fr; }
+}
