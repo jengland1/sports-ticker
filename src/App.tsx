@@ -219,7 +219,7 @@ const ESPN_PROXY =
   'https://sports-ticker-mocha.vercel.app/api/espn'
 
 function espnUrl(
-  host: 'site' | 'core',
+  host: 'site' | 'core' | 'web',
   path: string,
 ) {
   return (
@@ -234,8 +234,8 @@ const standingsCache = new Map<
 >()
 
 
-const teamLeadersCache = new Map<
-  string,
+const leagueAthleteStatsCache = new Map<
+  LeagueKey,
   Promise<any>
 >()
 
@@ -272,35 +272,214 @@ function fetchFantasyLeagueWeek(
   return request
 }
 
+function winterSeasonYear() {
+  const now = new Date()
+  return now.getMonth() >= 6
+    ? now.getFullYear() + 1
+    : now.getFullYear()
+}
 
-function fetchTeamLeaders(
+function fetchLeagueAthleteStats(
   league: LeagueKey,
-  teamId: string,
 ) {
-  const key =
-    `${league}-${teamId}`
-
   const cached =
-    teamLeadersCache.get(key)
+    leagueAthleteStatsCache.get(league)
 
   if (cached) return cached
 
-  const config =
-    LEAGUES[league]
+  const config = LEAGUES[league]
+  const season = winterSeasonYear()
+  const category =
+    league === 'NHL'
+      ? '&category=skaters'
+      : ''
 
   const request = fetchJson(
     espnUrl(
-      'site',
-      `/apis/site/v2/sports/${config.sport}/${config.slug}/teams/${teamId}/leaders?season=2026`,
+      'web',
+      `/apis/common/v3/sports/${config.sport}/${config.slug}/statistics/byathlete?region=us&lang=en&contentorigin=espn&isqualified=false&limit=1000&season=${season}&seasontype=2${category}`,
     ),
   ).catch(() => null)
 
-  teamLeadersCache.set(
-    key,
+  leagueAthleteStatsCache.set(
+    league,
     request,
   )
 
   return request
+}
+
+function athleteTeamMatches(
+  item: any,
+  team: TeamInfo,
+) {
+  const athlete = item?.athlete || {}
+  const ids = [
+    athlete.teamId,
+    athlete.team?.id,
+    item?.teamId,
+    item?.team?.id,
+  ]
+    .filter(Boolean)
+    .map(String)
+
+  if (ids.includes(String(team.id))) {
+    return true
+  }
+
+  const codes = [
+    athlete.teamAbbreviation,
+    athlete.team?.abbreviation,
+    athlete.teamShortName,
+    item?.teamAbbreviation,
+    item?.team?.abbreviation,
+  ]
+    .filter(Boolean)
+    .map((value) => String(value).toUpperCase())
+
+  return codes.includes(
+    String(team.code).toUpperCase(),
+  )
+}
+
+function athleteStatMap(
+  item: any,
+  data: any,
+) {
+  const map = new Map<string, string>()
+  const playerCategories =
+    Array.isArray(item?.categories)
+      ? item.categories
+      : []
+  const topCategories =
+    Array.isArray(data?.categories)
+      ? data.categories
+      : []
+
+  playerCategories.forEach(
+    (category: any, index: number) => {
+      const labels =
+        category?.labels ||
+        topCategories[index]?.labels ||
+        []
+      const displayNames =
+        category?.displayNames ||
+        topCategories[index]?.displayNames ||
+        []
+      const totals =
+        category?.totals || []
+
+      totals.forEach(
+        (value: any, statIndex: number) => {
+          const keys = [
+            labels[statIndex],
+            displayNames[statIndex],
+          ].filter(Boolean)
+
+          keys.forEach((key) => {
+            map.set(
+              String(key).toUpperCase(),
+              String(value),
+            )
+          })
+        },
+      )
+    },
+  )
+
+  return map
+}
+
+function seasonLeaderForTeam(
+  data: any,
+  team: TeamInfo,
+  league: 'NHL' | 'NBA',
+): MiniPlayer | undefined {
+  const athletes =
+    Array.isArray(data?.athletes)
+      ? data.athletes
+      : []
+
+  const candidates = athletes
+    .filter((item: any) =>
+      athleteTeamMatches(item, team),
+    )
+    .map((item: any) => {
+      const athlete = item?.athlete || {}
+      const stats =
+        athleteStatMap(item, data)
+
+      if (league === 'NHL') {
+        const goals =
+          cleanNumber(stats.get('G') ?? stats.get('GOALS')) ?? 0
+        const assists =
+          cleanNumber(stats.get('A') ?? stats.get('ASSISTS')) ?? 0
+        const points =
+          cleanNumber(stats.get('PTS') ?? stats.get('POINTS')) ??
+          goals + assists
+
+        return {
+          score: points,
+          player: {
+            id: String(
+              athlete.id ||
+                athlete.uid ||
+                athlete.displayName ||
+                '',
+            ),
+            name:
+              athlete.displayName ||
+              `${athlete.firstName || ''} ${athlete.lastName || ''}`.trim() ||
+              'Player',
+            headshot:
+              athlete.headshot?.href ||
+              athlete.headshot,
+            value: String(points),
+            sub: `${goals} G · ${assists} A · ${points} P`,
+          } as MiniPlayer,
+        }
+      }
+
+      const ppg =
+        cleanNumber(
+          stats.get('PPG') ??
+            stats.get('PTS/G') ??
+            stats.get('PTS') ??
+            stats.get('POINTS'),
+        ) ?? 0
+
+      return {
+        score: ppg,
+        player: {
+          id: String(
+            athlete.id ||
+              athlete.uid ||
+              athlete.displayName ||
+              '',
+          ),
+          name:
+            athlete.displayName ||
+            `${athlete.firstName || ''} ${athlete.lastName || ''}`.trim() ||
+            'Player',
+          headshot:
+            athlete.headshot?.href ||
+            athlete.headshot,
+          value: ppg.toFixed(1),
+          sub: 'PPG',
+        } as MiniPlayer,
+      }
+    })
+    .filter(
+      (item: any) =>
+        item.player.id &&
+        Number.isFinite(item.score),
+    )
+    .sort(
+      (a: any, b: any) =>
+        b.score - a.score,
+    )
+
+  return candidates[0]?.player
 }
 
 function cleanNumber(
@@ -3452,9 +3631,7 @@ function GameQuickStats({
 }: {
   game: Game
 }) {
-  const [awayLeaders, setAwayLeaders] =
-    useState<any>(null)
-  const [homeLeaders, setHomeLeaders] =
+  const [leagueStats, setLeagueStats] =
     useState<any>(null)
   const [statsLoaded, setStatsLoaded] =
     useState(false)
@@ -3471,20 +3648,10 @@ function GameQuickStats({
     let active = true
     setStatsLoaded(false)
 
-    Promise.all([
-      fetchTeamLeaders(
-        game.league,
-        game.away.id,
-      ),
-      fetchTeamLeaders(
-        game.league,
-        game.home.id,
-      ),
-    ])
-      .then(([away, home]) => {
+    fetchLeagueAthleteStats(game.league)
+      .then((data) => {
         if (!active) return
-        setAwayLeaders(away)
-        setHomeLeaders(home)
+        setLeagueStats(data)
         setStatsLoaded(true)
       })
       .catch(() => {
@@ -3495,12 +3662,7 @@ function GameQuickStats({
     return () => {
       active = false
     }
-  }, [
-    game.id,
-    game.league,
-    game.away.id,
-    game.home.id,
-  ])
+  }, [game.league])
 
   if (game.league === 'NFL') {
     return (
@@ -3514,93 +3676,27 @@ function GameQuickStats({
     return null
   }
 
-  if (game.league === 'NHL') {
-    const awayPoints =
-      teamNHLPointLeaders(
-        awayLeaders,
-        3,
-      )
-    const homePoints =
-      teamNHLPointLeaders(
-        homeLeaders,
-        3,
-      )
+  const away = seasonLeaderForTeam(
+    leagueStats,
+    game.away,
+    game.league,
+  )
+  const home = seasonLeaderForTeam(
+    leagueStats,
+    game.home,
+    game.league,
+  )
 
-    return (
-      <div className="gameQuickStats">
-        <div className="quickStatTitle">
-          TEAM POINT LEADERS
-        </div>
-
-        <div className="quickTeamGrid">
-          {[
-            {
-              code: game.away.code,
-              leaders: awayPoints,
-            },
-            {
-              code: game.home.code,
-              leaders: homePoints,
-            },
-          ].map((side) => (
-            <div
-              className="quickTeamPanel nhlLeaderPanel"
-              key={side.code}
-            >
-              <div className="quickTeamCode">
-                {side.code}
-              </div>
-
-              <div className="quickLeaderList">
-                {side.leaders.length ? (
-                  side.leaders.map(
-                    (player, index) => (
-                      <div
-                        className="quickLeaderRow nhlLeaderRow"
-                        key={player.id}
-                      >
-                        <div className="nhlLeaderName">
-                          <span>
-                            {index + 1}.
-                          </span>
-                          <strong>
-                            {player.name}
-                          </strong>
-                        </div>
-
-                        <em>
-                          {player.sub ||
-                            (player.value
-                              ? `${player.value} P`
-                              : '—')}
-                        </em>
-                      </div>
-                    ),
-                  )
-                ) : (
-                  <div className="quickUnavailable">
-                    {statsLoaded
-                      ? 'Season leaders unavailable'
-                      : 'Loading season leaders…'}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
+  if (statsLoaded && !away && !home) {
+    return null
   }
-
-  const away =
-    topNBAPlayer(awayLeaders)
-  const home =
-    topNBAPlayer(homeLeaders)
 
   return (
     <div className="gameQuickStats">
       <div className="quickStatTitle">
-        LEADING SCORERS · PPG
+        {game.league === 'NHL'
+          ? 'TEAM POINT LEADERS'
+          : 'LEADING SCORERS · PPG'}
       </div>
 
       <div className="quickFeatureGrid">
@@ -3620,14 +3716,16 @@ function GameQuickStats({
               <span>{code}</span>
               <strong>
                 {player?.name ||
-                  (statsLoaded
-                    ? 'Stats unavailable'
-                    : 'Loading…')}
+                  (!statsLoaded
+                    ? 'Loading…'
+                    : '—')}
               </strong>
               <em>
-                {player?.value
-                  ? `${player.value} PPG`
-                  : 'PPG —'}
+                {game.league === 'NHL'
+                  ? player?.sub || '—'
+                  : player?.value
+                    ? `${player.value} PPG`
+                    : '—'}
               </em>
             </div>
           </div>
