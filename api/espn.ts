@@ -45,7 +45,9 @@ export default async function handler(
       ? 'https://site.api.espn.com'
       : host === 'core'
         ? 'https://sports.core.api.espn.com'
-        : null
+        : host === 'web'
+          ? 'https://site.web.api.espn.com'
+          : null
 
   if (
     !base ||
