@@ -1107,26 +1107,9 @@ async function fetchPostseasonGames(
     LEAGUES[league]
 
   const standings =
-    await fetchStandings(
-      league,
-    )
+    await fetchStandings(league)
 
-  const data =
-    await fetchJson(
-      espnUrl(
-        'site',
-        `/apis/site/v2/sports/${config.sport}/${config.slug}/scoreboard?dates=${seasonYear}&seasontype=3&limit=1000`,
-      ),
-    )
-
-  const games =
-    await parseEvents(
-      data,
-      league,
-      standings,
-    )
-
-  return games.filter((game) => {
+  const isPostseasonGame = (game: Game) => {
     if (game.seasonType === 3) {
       return true
     }
@@ -1147,7 +1130,90 @@ async function fetchPostseasonGames(
       postseasonText.includes('nba finals') ||
       postseasonText.includes('super bowl')
     )
-  })
+  }
+
+  // ESPN's MLB scoreboard stopped reliably returning full date ranges
+  // in September 2026. Fetch the postseason one day at a time, then
+  // combine/dedupe the events. This gives us the complete bracket.
+  if (league === 'MLB') {
+    const start = new Date(
+      seasonYear,
+      8,
+      28,
+    )
+    const end = new Date(
+      seasonYear,
+      10,
+      2,
+    )
+
+    const days: Date[] = []
+    for (
+      let day = new Date(start);
+      day <= end;
+      day = addDays(day, 1)
+    ) {
+      days.push(new Date(day))
+    }
+
+    const allGames: Game[] = []
+
+    // Small batches keep the Vercel proxy/ESPN endpoint from getting
+    // hammered while still loading the bracket quickly.
+    for (let index = 0; index < days.length; index += 6) {
+      const batch = days.slice(index, index + 6)
+      const results = await Promise.all(
+        batch.map(async (day) => {
+          try {
+            const data = await fetchJson(
+              espnUrl(
+                'site',
+                `/apis/site/v2/sports/${config.sport}/${config.slug}/scoreboard?dates=${dateKey(day)}&seasontype=3&limit=100`,
+              ),
+            )
+
+            return await parseEvents(
+              data,
+              league,
+              standings,
+            )
+          } catch {
+            return [] as Game[]
+          }
+        }),
+      )
+
+      allGames.push(...results.flat())
+    }
+
+    const unique = new Map<string, Game>()
+    for (const game of allGames) {
+      if (isPostseasonGame(game)) {
+        unique.set(game.id, game)
+      }
+    }
+
+    return [...unique.values()].sort(
+      (a, b) =>
+        new Date(a.date).getTime() -
+        new Date(b.date).getTime(),
+    )
+  }
+
+  const data = await fetchJson(
+    espnUrl(
+      'site',
+      `/apis/site/v2/sports/${config.sport}/${config.slug}/scoreboard?dates=${seasonYear}&seasontype=3&limit=1000`,
+    ),
+  )
+
+  const games = await parseEvents(
+    data,
+    league,
+    standings,
+  )
+
+  return games.filter(isPostseasonGame)
 }
 
 function postseasonIsActiveNow(
@@ -4418,7 +4484,7 @@ function PlayoffsHub({
               lineHeight: 1.5,
             }}
           >
-            No active postseason brackets are available right now. This tab will populate automatically when ESPN has playoff games for NHL, NFL, NBA, or MLB.
+            No active postseason bracket is available right now.
           </div>
         ) : (
           <div
@@ -5213,9 +5279,24 @@ function App() {
         const year =
           new Date().getFullYear()
 
+        const month =
+          new Date().getMonth() + 1
+
+        // Only query leagues that can actually be in-season for their
+        // postseason right now. In October that means MLB only, so NHL,
+        // NBA and NFL never clutter the playoff hub with old data.
+        const candidateLeagues: LeagueKey[] =
+          month >= 9 && month <= 11
+            ? ['MLB']
+            : month <= 2
+              ? ['NFL']
+              : month >= 4 && month <= 6
+                ? ['NHL', 'NBA']
+                : []
+
         const results =
           await Promise.allSettled(
-            LEAGUE_ORDER.map(
+            candidateLeagues.map(
               async (league) => ({
                 league,
                 games:
@@ -5275,7 +5356,7 @@ function App() {
     const timer =
       window.setInterval(
         loadPlayoffs,
-        60000,
+        300000,
       )
 
     return () => {
